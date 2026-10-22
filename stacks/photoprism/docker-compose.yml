@@ -1,0 +1,53 @@
+version: '3.5'
+
+services:
+  photoprism:
+    container_name: photoprism
+    image: photoprism/photoprism:latest
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
+    environment:
+      PHOTOPRISM_ADMIN_PASSWORD: ${PHOTOPRISM_ADMIN_PASSWORD:-change_me_admin_password}
+      PHOTOPRISM_SITE_URL: ${PHOTOPRISM_SITE_URL:-https://photoprism.example.com/}
+      PHOTOPRISM_WAKEUP_INTERVAL: 3600
+      PHOTOPRISM_AUTO_INDEX: 3600
+      PHOTOPRISM_ORIGINALS_LIMIT: 5000
+      
+      # --- Configuration MariaDB ---
+      PHOTOPRISM_DATABASE_DRIVER: "mysql"
+      PHOTOPRISM_DATABASE_SERVER: "photoprism-db:3306"
+      PHOTOPRISM_DATABASE_NAME: "photoprism"
+      PHOTOPRISM_DATABASE_USER: "photoprism"
+      PHOTOPRISM_DATABASE_PASSWORD: ${PHOTOPRISM_DB_PASSWORD:-change_me_db_password}
+    
+    restart: unless-stopped
+    depends_on:
+      - photoprism-db
+    volumes:
+      - "${STORAGE_PATH:-/srv/storage}/media/PHOTO_IMPORT:/photoprism/import"
+      - "${STORAGE_PATH:-/srv/storage}/photoprism:/photoprism/storage"
+      - "${STORAGE_PATH:-/srv/storage}/photoprism/originals:/photoprism/originals"
+      - "${STORAGE_PATH:-/srv/storage}/nextcloud/photos:/photoprism/originals/import_nextcloud:ro"
+
+  photoprism-db:
+    image: mariadb:10.11
+    container_name: photoprism-db
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
+    command: mariadbd --innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+    volumes:
+      - "${STORAGE_PATH:-/srv/storage}/photoprism-database:/var/lib/mysql"
+    environment:
+      MARIADB_AUTO_UPGRADE: "1"
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-change_me_mariadb_root}
+      MARIADB_DATABASE: "photoprism"
+      MARIADB_USER: "photoprism"
+      MARIADB_PASSWORD: ${PHOTOPRISM_DB_PASSWORD:-change_me_db_password}
+
+networks:
+  default:
+    name: proxy
+    external: true

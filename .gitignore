@@ -1,0 +1,30 @@
+# Fichiers de configuration sensibles et variables d'environnement
+*.env
+*.env.*
+!*.env.example
+*.key
+*.pem
+*.crt
+*.pfx
+
+# Données et volumes Docker locaux
+data/
+config/
+!stacks/homepage/config/
+!stacks/homepage/config/**
+volumes/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs & temporaires
+*.log
+logs/
+*.bak
+*.tmp
+# Sauvegarde brute locale contenant des bases de données et clés privées
+backup_stacks/
+
+.DS_Store
+Thumbs.db
+

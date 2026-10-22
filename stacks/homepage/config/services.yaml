@@ -1,0 +1,123 @@
+# 🏠 Configuration des services Homepage
+# Documentation officielle : https://gethomepage.dev/configs/services/
+
+- Multimédia & Streaming:
+    - Jellyfin:
+        icon: jellyfin.png
+        href: http://jellyfin.local/
+        description: Serveur de streaming multimédia
+        # Pour activer les statistiques en direct :
+        # widget:
+        #   type: jellyfin
+        #   url: http://jellyfin:8096
+        #   key: VOTRE_CLE_API_JELLYFIN
+
+    - Jellyseerr:
+        icon: jellyseerr.png
+        href: http://jellyseerr.local/
+        description: Portail de requêtes films & séries
+        # widget:
+        #   type: jellyseerr
+        #   url: http://jellyseerr:5055
+        #   key: VOTRE_CLE_API_JELLYSEERR
+
+    - Radarr:
+        icon: radarr.png
+        href: http://radarr.local/
+        description: Gestion automatisée des films
+        # widget:
+        #   type: radarr
+        #   url: http://radarr:7878
+        #   key: VOTRE_CLE_API_RADARR
+
+    - Sonarr:
+        icon: sonarr.png
+        href: http://sonarr.local/
+        description: Gestion automatisée des séries TV
+        # widget:
+        #   type: sonarr
+        #   url: http://sonarr:8989
+        #   key: VOTRE_CLE_API_SONARR
+
+    - Transmission:
+        icon: transmission.png
+        href: http://transmission.local/
+        description: Client de téléchargement BitTorrent
+        # widget:
+        #   type: transmission
+        #   url: http://transmission:9091
+
+    - Prowlarr:
+        icon: prowlarr.png
+        href: http://prowlarr.local/
+        description: Gestionnaire centralisé des indexeurs
+
+- Cloud & Données:
+    - Nextcloud:
+        icon: nextcloud.png
+        href: https://cloud.mondomaine.com/
+        description: Cloud privé, fichiers & agenda
+
+    - PhotoPrism:
+        icon: photoprism.png
+        href: https://photos.mondomaine.com/
+        description: Galerie photo avec indexation IA
+
+    - Vaultwarden:
+        icon: vaultwarden.png
+        href: https://passwords.mondomaine.com/
+        description: Coffre-fort de mots de passe chiffré
+
+- Domotique & Objets:
+    - Home Assistant:
+        icon: home-assistant.png
+        href: http://homeassistant.local:8123/
+        description: Cœur domotique de la maison
+
+    - ESPHome:
+        icon: esphome.png
+        href: http://esphome.local/
+        description: Gestion des microcontrôleurs DIY
+
+    - Zigbee2MQTT:
+        icon: zigbee2mqtt.png
+        href: http://zigbee2mqtt.local/
+        description: Passerelle radio capteurs Zigbee
+
+- Administration & Réseau:
+    - OpenMediaVault:
+        icon: openmediavault.png
+        href: http://omv.local/
+        description: Gestionnaire NAS & Grappe RAID 5
+
+    - Portainer:
+        icon: portainer.png
+        href: http://portainer.local/
+        description: Gestion visuelle des conteneurs Docker
+
+    - Nginx Proxy Manager:
+        icon: nginx-proxy-manager.png
+        href: http://proxy.local:81/
+        description: Reverse Proxy & Gestion des certificats SSL
+
+    - AdGuard Home:
+        icon: adguard-home.png
+        href: http://adguard.local/
+        description: Serveur DNS & Bloqueur de publicités
+
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: http://kuma.local/
+        description: Surveillance de santé et alertes de panne
+
+- Intelligence Artificielle & Automatisation (J.A.R.V.I.S.):
+    - Open WebUI:
+        icon: open-webui.png
+        href: http://chat.jarvis.local/
+        description: Cerveau LLM & RAG Documentaire Nextcloud
+
+    - n8n:
+        icon: n8n.png
+        href: http://n8n.jarvis.local/
+        description: Orchestrateur de flux & Webhooks agentiques
+

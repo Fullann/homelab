@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  collabora:
+    image: collabora/code
+    container_name: collabora
+    restart: always
+    cap_add:
+      - MKNOD
+    environment:
+      - domain=${NEXTCLOUD_DOMAIN:-nextcloud.example.com}
+      - username=${COLLABORA_ADMIN_USER:-admin}
+      - password=${COLLABORA_ADMIN_PASSWORD:-secret}
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:server_name=${COLLABORA_DOMAIN:-collabora.example.com}
+    volumes:
+      - collabora_data:/etc/coolwsd
+    networks:
+      - proxy
+
+volumes:
+  collabora_data:
+
+networks:
+  proxy:
+    external: true

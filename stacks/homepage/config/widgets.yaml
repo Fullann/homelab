@@ -1,0 +1,12 @@
+# 📊 Widgets en haut de page (Recherche, Météo, Ressources)
+# Documentation : https://gethomepage.dev/configs/widgets/
+
+- search:
+    provider: duckduckgo
+    target: _blank
+
+- resources:
+    label: Système
+    cpu: true
+    memory: true
+    celsius: true

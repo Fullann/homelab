@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Zurich
+    volumes:
+      - prowlarr_config:/config
+    restart: unless-stopped
+    networks:
+      - default
+
+volumes:
+  prowlarr_config:
+
+networks:
+  default:
+    name: proxy
+    external: true

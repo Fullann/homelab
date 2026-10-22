@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  pufferpanel:
+    image: pufferpanel/pufferpanel:latest
+    container_name: pufferpanel
+    ports:
+      - '5657:5657'     # Port SFTP pour la gestion des fichiers de jeux
+    volumes:
+      - pufferpanel-config:/etc/pufferpanel
+      - /var/lib/pufferpanel:/var/lib/pufferpanel
+      # Permet à PufferPanel de créer automatiquement des conteneurs Docker frères pour chaque jeu
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: on-failure
+
+volumes:
+  pufferpanel-config:
+
+networks:
+  default:
+    name: proxy
+    external: true

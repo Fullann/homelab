@@ -1,0 +1,22 @@
+version: "3.3"
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - HOMEPAGE_ALLOWED_HOSTS=*
+    volumes:
+      # Dossier local 'config/' facile à modifier directement depuis votre éditeur
+      - ./config:/app/config
+      # Connexion en lecture seule au proxy Docker pour afficher l'état des conteneurs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+
+networks:
+  default:
+    name: proxy
+    external: true

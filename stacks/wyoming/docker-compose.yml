@@ -1,0 +1,25 @@
+services:
+  whisper:
+    image: rhasspy/wyoming-whisper:latest
+    container_name: wyoming-whisper
+    restart: unless-stopped
+    volumes:
+      - ./whisper-data:/data
+    command: ["--model", "tiny-int8", "--language", "fr"]
+
+  piper:
+    image: rhasspy/wyoming-piper:latest
+    container_name: wyoming-piper
+    restart: unless-stopped
+    volumes:
+      - ./piper-data:/data
+    command: ["--voice", "fr_FR-siwis-medium"]
+
+  openwakeword:
+    image: rhasspy/wyoming-openwakeword:latest
+    container_name: wyoming-openwakeword
+    restart: unless-stopped
+networks:
+  default:
+    name: proxy
+    external: true

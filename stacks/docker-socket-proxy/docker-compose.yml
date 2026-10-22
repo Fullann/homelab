@@ -1,0 +1,10 @@
+services:
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    container_name: docker-proxy
+    restart: unless-stopped
+    environment:
+      - CONTAINERS=1 # Permet de lister et contrôler les conteneurs
+      - POST=1       # Permet de démarrer/arrêter/redémarrer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

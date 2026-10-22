@@ -1,0 +1,22 @@
+# ⚙️ Réglages généraux de Homepage
+# Documentation : https://gethomepage.dev/configs/settings/
+
+title: "Homelab Personnel"
+background:
+  opacity: 50
+theme: dark
+color: slate
+
+layout:
+  Multimédia & Streaming:
+    style: row
+    columns: 3
+  Cloud & Données:
+    style: row
+    columns: 3
+  Domotique & Objets:
+    style: row
+    columns: 3
+  Administration & Réseau:
+    style: row
+    columns: 4

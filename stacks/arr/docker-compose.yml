@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    restart: always
+    volumes:
+      - sonarr_config:/config
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
+
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    restart: always
+    volumes:
+      - radarr_config:/config
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
+
+  lidarr:
+    image: linuxserver/lidarr
+    container_name: lidarr
+    restart: always
+    volumes:
+      - lidarr_config:/config
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - readarr_config:/config
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
+    restart: unless-stopped
+
+volumes:
+  radarr_config:
+  sonarr_config:
+  lidarr_config:
+  readarr_config:
+
+networks:
+  default:
+    name: proxy
+    external: true

@@ -1,0 +1,21 @@
+version: '3'
+services:
+  app:
+    container_name: proxy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+
+      - '443:443'
+    volumes:
+      - proxydata:/data
+      - ./letsencrypt:/etc/letsencrypt
+volumes:
+  proxydata:
+networks:
+  default:
+    name: proxy
+    external: true

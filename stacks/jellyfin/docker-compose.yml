@@ -1,0 +1,30 @@
+version: "2.1"
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Zurich
+    volumes:
+      - jellfin_config:/config
+      # Dossier temporaire dédié pour éviter de saturer /config
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/transcode:/transcode
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/MUSIC:/data/music
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/FILM:/data/movies
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/SERIE:/data/series
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/BOOK:/data/book
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "106"
+    restart: unless-stopped
+
+volumes:
+  jellfin_config:
+
+networks:
+  default:
+    name: proxy
+    external: true

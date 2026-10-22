@@ -1,0 +1,50 @@
+version: "2.1"
+services:
+  nextcloud:
+    image: linuxserver/nextcloud
+    container_name: nextcloud
+    environment:
+      - PUID=48
+      - PGID=100
+      - TZ=${TIMEZONE:-Europe/Paris}
+      - NEXTCLOUD_UPLOAD_LIMIT=150G
+      - NEXTCLOUD_MAX_TIME=64800
+      - NEXTCLOUD_MEMORY_LIMIT=3072M
+      - DOCKER_MODS=linuxserver/mods:universal-package-install|imagemagick,imagemagick-heic
+    volumes:
+      - nextcloud_config:/config
+      - ${STORAGE_DATA_PATH:-/srv/nextcloud/data}:/data
+    depends_on:
+      - "mariadb"
+    restart: unless-stopped
+    labels:
+      # Empêche Watchtower de mettre à jour Nextcloud à l'aveugle sans migration manuelle
+      - "com.centurylinklabs.watchtower.enable=false"
+
+  mariadb:
+    image: linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-change_me_root_password}
+      - MYSQL_ROOT_USER=root
+      - MYSQL_DATABASE=nextcloud_db
+      - MYSQL_USER=nextcloud_usr
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-change_me_user_password}
+      - PUID=48
+      - PGID=100
+      - TZ=${TIMEZONE:-Europe/Paris}
+    volumes:
+      - mariadb_config:/config
+    restart: unless-stopped
+    labels:
+      # Protection contre les mises à jour majeures automatiques de base de données
+      - "com.centurylinklabs.watchtower.enable=false"
+
+volumes:
+  nextcloud_config:
+  mariadb_config:
+
+networks:
+  default:
+    name: proxy
+    external: true

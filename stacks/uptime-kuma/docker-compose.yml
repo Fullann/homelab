@@ -1,0 +1,14 @@
+version: "2"
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+
+    volumes:
+      - uptime-config:/app/data
+    restart: always
+volumes:
+  uptime-config:
+networks:
+  default:
+    name: proxy
+    external: true

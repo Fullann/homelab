@@ -1,0 +1,152 @@
+{
+  "name": "Briefing Cybersécurité J.A.R.V.I.S. (Fusion Flux & Failover)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * *"
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Chaque matin à 07h00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [160, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/TheHackersNews"
+      },
+      "id": "2",
+      "name": "Flux The Hacker News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [360, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://www.cert.ssi.gouv.fr/feed/"
+      },
+      "id": "3",
+      "name": "Flux CERT-FR (Alertes)",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [360, 400]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "3b",
+      "name": "Fusionner les deux flux",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [560, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const hnItems = $('Flux The Hacker News').all().slice(0, 4).map(item => {\n  const d = item.json;\n  return `- ${d.title}\\n  Extrait : ${d.contentSnippet || d.summary || ''}\\n  Lien : ${d.link}`;\n}).join('\\n\\n');\n\nconst certItems = $('Flux CERT-FR (Alertes)').all().slice(0, 4).map(item => {\n  const d = item.json;\n  return `- ${d.title}\\n  Extrait : ${d.contentSnippet || d.summary || ''}\\n  Lien : ${d.link}`;\n}).join('\\n\\n');\n\nconst promptText = `Tu es J.A.R.V.I.S., l'intelligence artificielle du Homelab. Rédige un briefing matinal complet et soigné en français en format HTML pour ton administrateur à partir des deux sources de veille suivantes :\\n\\n=== SOURCE 1 : THE HACKER NEWS (International) ===\\n${hnItems}\\n\\n=== SOURCE 2 : CERT-FR (Alertes Officielles France) ===\\n${certItems}\\n\\nConsignes de rédaction :\\n1. Rédige un UNIQUE rapport clair et professionnel en HTML (utilise des balises <h3>, <ul>, <li>, <strong>, <a href=\"...\">).\\n2. Structure le rapport avec :\\n   - 🚨 Alertes et Vulnérabilités Critiques (CERT-FR)\\n   - 🌐 Menaces & Attaques Internationales (The Hacker News)\\n   - 💡 Recommandations techniques prioritaires pour le Homelab.\\n3. Reste concis, précis et percutant dans le style de J.A.R.V.I.S.`;\n\nreturn [{ json: { prompt: promptText } }];"
+      },
+      "id": "4",
+      "name": "Sélection des actualités (2 sources)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-1.5-flash",
+          "mode": "list"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.prompt }}"
+            }
+          ]
+        }
+      },
+      "id": "5",
+      "name": "1. Tentative Gemini (Cloud Rapide)",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [980, 200],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ollama:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: \"qwen2.5:7b\",\n  prompt: $('Sélection des actualités (2 sources)').first().json.prompt,\n  stream: false\n}) }}"
+      },
+      "id": "6",
+      "name": "2. Fallback Ollama Local (Secours)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 400]
+    },
+    {
+      "parameters": {
+        "fromEmail": "jarvis@homelab.local",
+        "toEmail": "VOTRE_EMAIL@example.com",
+        "subject": "={{ '🛡️ Briefing Cybersécurité J.A.R.V.I.S. ' + ($json.content ? '[Gemini Cloud]' : '[Ollama Local]') }}",
+        "html": "={{ $json.content?.parts?.[0]?.text || $json.response }}"
+      },
+      "id": "7",
+      "name": "Envoi du Mail (SMTP)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1440, 300]
+    }
+  ],
+  "connections": {
+    "Chaque matin à 07h00": {
+      "main": [
+        [
+          { "node": "Flux The Hacker News", "type": "main", "index": 0 },
+          { "node": "Flux CERT-FR (Alertes)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Flux The Hacker News": {
+      "main": [
+        [{ "node": "Fusionner les deux flux", "type": "main", "index": 0 }]
+      ]
+    },
+    "Flux CERT-FR (Alertes)": {
+      "main": [
+        [{ "node": "Fusionner les deux flux", "type": "main", "index": 1 }]
+      ]
+    },
+    "Fusionner les deux flux": {
+      "main": [
+        [{ "node": "Sélection des actualités (2 sources)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Sélection des actualités (2 sources)": {
+      "main": [
+        [{ "node": "1. Tentative Gemini (Cloud Rapide)", "type": "main", "index": 0 }]
+      ]
+    },
+    "1. Tentative Gemini (Cloud Rapide)": {
+      "main": [
+        [{ "node": "Envoi du Mail (SMTP)", "type": "main", "index": 0 }],
+        [{ "node": "2. Fallback Ollama Local (Secours)", "type": "main", "index": 0 }]
+      ]
+    },
+    "2. Fallback Ollama Local (Secours)": {
+      "main": [
+        [{ "node": "Envoi du Mail (SMTP)", "type": "main", "index": 0 }]
+      ]
+    }
+  }
+}

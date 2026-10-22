@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=100                 # Groupe 'users' d'OpenMediaVault
+      - TZ=Europe/Paris
+      - TRANSMISSION_UMASK=2     # Umask 002 : fichiers créés en 775/664 pour permettre à Radarr/Sonarr de les déplacer sans 'Permission Denied'
+    volumes:
+      - transmission_config:/config
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
+    ports:
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+
+volumes:
+  transmission_config:
+
+networks:
+  default:
+    name: proxy
+    external: true

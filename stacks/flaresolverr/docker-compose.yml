@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+    flaresolverr:
+        image: 'ghcr.io/flaresolverr/flaresolverr:latest'
+        restart: unless-stopped
+        environment:
+            - LOG_LEVEL=info
+        container_name: flaresolverr
+networks:
+  default:
+    name: proxy
+    external: true

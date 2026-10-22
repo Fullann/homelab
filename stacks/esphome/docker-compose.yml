@@ -1,0 +1,15 @@
+services:
+  esphome:
+    container_name: esphome
+    image: ghcr.io/esphome/esphome:latest
+    environment:
+      - USERNAME=${ESPHOME_USERNAME:-admin}
+      - PASSWORD=${ESPHOME_PASSWORD:-change_me_super_secret}
+    volumes:
+      - /opt/docker/esphome:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+networks:
+  default:
+    name: proxy
+    external: true
