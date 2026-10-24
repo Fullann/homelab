@@ -1,0 +1,78 @@
+###############################################################
+# 🔐 Configuration Authelia SSO & Double Authentification (2FA)
+# Documentation officielle : https://www.authelia.com/configuration/
+###############################################################
+
+theme: dark
+default_2fa_method: totp
+
+server:
+  host: 0.0.0.0
+  port: 9091
+
+log:
+  level: info
+
+totp:
+  issuer: "Homelab Authelia"
+  period: 30
+  skew: 1
+
+webauthn:
+  disable: false
+  display_name: "Homelab Passkey"
+
+ntp:
+  address: "time.cloudflare.com:123"
+  max_desync: 3s
+
+authentication_backend:
+  password_reset:
+    disable: true
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+      iterations: 3
+      memory: 65536
+      parallelism: 4
+      key_length: 32
+      salt_length: 16
+
+access_control:
+  default_policy: deny
+  rules:
+    # 1. Le portail d'authentification lui-même ne doit jamais être bloqué
+    - domain:
+        - "auth.mondomaine.com"
+      policy: bypass
+
+    # 2. Services d'administration protégés par 2FA obligatoire
+    - domain:
+        - "prowlarr.mondomaine.com"
+        - "radarr.mondomaine.com"
+        - "sonarr.mondomaine.com"
+        - "transmission.mondomaine.com"
+      policy: two_factor
+
+session:
+  name: authelia_session
+  domain: mondomaine.com
+  same_site: lax
+  expiration: 2h
+  inactivity: 15m
+  remember_me: 1M
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 10m
+
+storage:
+  local:
+    path: /config/db.sqlite3
+
+# Stockage local des notifications d'inscription 2FA (évite d'exiger un serveur SMTP)
+notifier:
+  filesystem:
+    filename: /config/notification.txt

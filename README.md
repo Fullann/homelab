@@ -119,6 +119,9 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | [**5. Tutoriel de Déploiement**](docs/5-deployment-guide.md) | Procédure pas-à-pas pour reconstruire tout le serveur de A à Z ou déployer un module isolé (uniquement le multimédia, la domotique ou Vaultwarden). |
 | [**6. Serveur Minecraft & PufferPanel**](docs/6-minecraft-pufferpanel.md) | Déploiement d'un serveur Minecraft optimisé (Paper), acceptation EULA, redirection NAT port 25565 et enregistrements DNS (`mc.mondomaine.com` en A/CNAME et SRV). |
 | [**7. Cerveau IA Local J.A.R.V.I.S.**](docs/7-jarvis-ai-brain.md) | Architecture et déploiement d'Ollama, Open WebUI, n8n, réécritures DNS locales AdGuard (*.jarvis.local), RAG Nextcloud et intégration Assist Home Assistant. |
+| [**8. VPN Mesh Tailscale & Subnet Router**](docs/8-tailscale-vpn.md) | Accès distant d'administration chiffré (WireGuard), routage du sous-réseau local `192.168.1.0/24` (Subnet Router), mode Exit Node et zéro port ouvert. |
+| [**9. Détection d'Intrusions & Bannissement IP (CrowdSec)**](docs/9-crowdsec-security.md) | Analyse en temps réel des journaux NPM et SSH, blocage automatique des bots malveillants via le pare-feu Linux (nftables). |
+| [**10. Authentification Unique SSO & 2FA (Authelia)**](docs/10-authelia-sso-2fa.md) | Portail d'accès unifié, double authentification (TOTP) et Passkeys WebAuthn protégeant les interfaces d'administration. |
 
 ---
 
@@ -182,6 +185,9 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | **Homepage** | `3000` | **Tableau de bord applicatif** : Portail d'accueil statique et léger affichant l'état des services et des indicateurs temps réel via API. |
 | **PufferPanel** | `8080 / 5657` | **Gestionnaire de serveurs de jeux** : Orchestration de conteneurs pour serveurs de jeu (Minecraft Java/Bedrock) avec console web et serveur SFTP intégré. |
 | **Watchtower** | `8080` | **Mise à jour automatisée de conteneurs** : Scrutation périodique des registres d'images et redéploiement contrôlé des conteneurs ciblés. |
+| **Tailscale** | `Host / VPN` | **Passerelle VPN Mesh & Subnet Router** : Tunnel WireGuard chiffré reliant vos appareils mobiles au sous-réseau local (`192.168.1.0/24`) et mode Exit Node sans ouvrir aucun port. |
+| **CrowdSec** | `LAPI / Host` | **Système de détection d'intrusions (IDS/IPS)** : Analyse comportementale des logs Nginx et SSH avec bannissement automatique dans le pare-feu de l'hôte. |
+| **Authelia** | `9091` | **Serveur d'authentification SSO & 2FA** : Passerelle de contrôle d'accès protégeant les sous-domaines sensibles par double facteur TOTP ou Passkey. |
 
 ---
 
@@ -213,6 +219,9 @@ Toutes les configurations `docker-compose.yml` ont été assainies (secrets et d
 | **watchtower** | [`stacks/watchtower/`](stacks/watchtower/docker-compose.yml) | `watchtower` | 🔒 **Local interne** |
 | **portainer-ce** | [`stacks/portainer-ce/`](stacks/portainer-ce/docker-compose.yml) | `portainer` | 🔒 **Local / VPN** |
 | **jarvis** | [`stacks/jarvis/`](stacks/jarvis/docker-compose.yml) | `ollama`, `open-webui`, `n8n` | 🔒 **Local / VPN** *(Ports 8080/5678 via NPM)* |
+| **tailscale** | [`stacks/tailscale/`](stacks/tailscale/docker-compose.yml) | `tailscale` | 🔒 **VPN Privé** *(Réseau Host)* |
+| **crowdsec** | [`stacks/crowdsec/`](stacks/crowdsec/docker-compose.yml) | `crowdsec` | 🔒 **Local / Interne** |
+| **authelia** | [`stacks/authelia/`](stacks/authelia/docker-compose.yml) | `authelia` | 🌐 **Public (HTTPS via NPM)** |
 
 ---
 
@@ -222,5 +231,6 @@ Toutes les configurations `docker-compose.yml` ont été assainies (secrets et d
 2. **Cloisonnement réseau :** N'exposer sur Internet que les ports 80/443 du Reverse Proxy avec certificat SSL. Accéder aux panneaux d'administration (Portainer, PufferPanel, etc.) via un VPN privé (WireGuard/Tailscale).
 3. **Mots de passe & MFA :** Activer systématiquement la double authentification (2FA) sur Vaultwarden, Nextcloud et Home Assistant.
 4. **Sauvegarde 3-2-1 :** Rappelez-vous que le RAID 5 protège de la panne physique, mais ne remplace pas une vraie sauvegarde externe hors-site.
+5. **Hygiène Système & Logs :** Limiter la taille des logs Docker via `/etc/docker/daemon.json` ([`scripts/setup_docker_log_rotation.sh`](scripts/setup_docker_log_rotation.sh)) pour éviter la saturation du SSD système.
 
 Consultez le [**Guide de Hardening détaillé**](docs/4-security-hardening.md) pour les instructions complètes de sécurisation SSH et système.

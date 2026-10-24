@@ -1,0 +1,16 @@
+#############################################################################
+# 👥 Base de données utilisateurs Authelia
+# Pour générer le mot de passe chiffré en Argon2id, exécutez sur le serveur :
+# docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password 'VotreMotDePasse'
+#############################################################################
+
+users:
+  admin:
+    disabled: false
+    displayname: "Administrateur"
+    # Exemple de hash Argon2id (mot de passe 'password123' à remplacer impérativement) :
+    password: "$argon2id$v=19$m=65536,t=3,p=4$epT1oZpD64T1fU4i2c7y5Q$M7c4q5i8/8c0p2X1Y4l5a6b7c8d9e0f1g2h3i4j5k6l"
+    email: admin@mondomaine.com
+    groups:
+      - admins
+      - dev

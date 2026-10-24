@@ -148,5 +148,12 @@
         [{ "node": "Envoi du Mail (SMTP)", "type": "main", "index": 0 }]
       ]
     }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Zurich",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true
   }
 }

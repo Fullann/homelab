@@ -1,0 +1,18 @@
+services:
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    restart: unless-stopped
+    volumes:
+      - ./config:/config
+    networks:
+      - proxy
+    environment:
+      - TZ=Europe/Paris
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET:-change_me_jwt_secret_min_32_chars}
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_ENCRYPTION_KEY:-change_me_storage_encryption_key_min_32_chars}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET:-change_me_session_secret_min_32_chars}
+
+networks:
+  proxy:
+    external: true

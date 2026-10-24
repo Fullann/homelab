@@ -12,6 +12,10 @@ data/
 config/
 !stacks/homepage/config/
 !stacks/homepage/config/**
+!stacks/authelia/config/
+stacks/authelia/config/*
+!stacks/authelia/config/configuration.yml
+!stacks/authelia/config/users_database.yml.example
 volumes/
 *.db
 *.sqlite

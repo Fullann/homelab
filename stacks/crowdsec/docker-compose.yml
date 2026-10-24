@@ -1,0 +1,35 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    environment:
+      # Collections de détection : Nginx (exploits web), HTTP CVE (scans de vulnérabilités), Whitelist, SSH
+      - COLLECTIONS=crowdsecurity/nginx crowdsecurity/http-cve crowdsecurity/whitelist-good-actors crowdsecurity/sshd
+      - CUSTOM_HOSTNAME=homelab-omv
+    ports:
+      # Port LAPI exposé sur le port 8085 (évite le conflit avec l'interface web OMV sur le port 8080)
+      - "127.0.0.1:8085:8080"
+    volumes:
+      - crowdsec_config:/etc/crowdsec
+      - crowdsec_data:/var/lib/crowdsec/data
+      # Fichier d'acquisition indiquant à CrowdSec quels logs surveiller
+      - ./acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+      # Montage en lecture seule des logs HTTP/HTTPS de Nginx Proxy Manager
+      - proxydata:/var/log/nginx:ro
+      # Montage en lecture seule des logs d'authentification SSH de l'hôte Debian
+      - /var/log/auth.log:/var/log/auth.log:ro
+    networks:
+      - proxy
+    restart: unless-stopped
+
+volumes:
+  crowdsec_config:
+  crowdsec_data:
+  # Volume externe contenant les données et logs de Nginx Proxy Manager
+  proxydata:
+    external: true
+    name: nginx-proxy-manager_proxydata
+
+networks:
+  proxy:
+    external: true

@@ -1,0 +1,24 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    hostname: homelab-omv
+    environment:
+      # Clé d'authentification générée dans la console Tailscale (Settings > Keys)
+      - TS_AUTHKEY=${TS_AUTHKEY:-tskey-auth-change_me}
+      # Annonce de votre sous-réseau local (Subnet Router) pour joindre vos IP LAN à distance
+      - TS_ROUTES=${TS_ROUTES:-192.168.1.0/24}
+      # Stockage persistant de l'état de la machine (clé de chiffrement et identité du nœud)
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+      # Permet également au serveur d'agir comme passerelle de sortie chiffrée (Exit Node)
+      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS:---advertise-exit-node}
+    volumes:
+      - tailscale_data:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    privileged: true
+    network_mode: host
+    restart: unless-stopped
+
+volumes:
+  tailscale_data:

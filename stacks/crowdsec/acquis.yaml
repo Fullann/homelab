@@ -1,0 +1,16 @@
+# ==============================================================================
+# 🛡️ Configuration de l'acquisition des logs pour CrowdSec
+# ==============================================================================
+
+# 1. Journaux de Nginx Proxy Manager (attaques web, scans de vulnérabilités, 401/403/404 répétés)
+filenames:
+  - /var/log/nginx/logs/*.log
+  - /var/log/nginx/*.log
+labels:
+  type: nginx
+---
+# 2. Journaux d'authentification SSH du serveur hôte Debian (tentatives de brute-force SSH)
+filenames:
+  - /var/log/auth.log
+labels:
+  type: syslog

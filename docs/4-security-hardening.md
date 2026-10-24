@@ -115,21 +115,24 @@ Le coffre-fort de mots de passe est le composant le plus critique de votre Homel
 
 ---
 
-## 6. Détection d'intrusion & Bannissement IP (Fail2ban / CrowdSec)
+## 6. Détection d'intrusion & Authentification Unifiée (CrowdSec & Authelia)
 
-Exposer un reverse proxy signifie que des robots vont inévitablement scanner vos sous-domaines à la recherche de failles :
+Exposer un reverse proxy signifie que des robots scannent continuellement vos sous-domaines à la recherche de failles :
 
-* **Principe** : En couplant Nginx Proxy Manager à **CrowdSec** ou **Fail2ban**, les journaux d'accès (`access.log` et `error.log`) sont analysés en temps réel.
-* **Action automatique** : Dès qu'une adresse IP enchaîne plusieurs tentatives de connexion échouées (ex: 3 erreurs 401 sur Nextcloud ou Home Assistant), son adresse IP est automatiquement bannie au niveau du pare-feu `iptables` / `nftables` du serveur hôte pendant plusieurs heures.
+* **CrowdSec (Détection et bannissement temps réel)** : En couplant Nginx Proxy Manager à CrowdSec ([`stacks/crowdsec/`](../stacks/crowdsec/)), les journaux d'accès (`access.log` et `error.log`) et de SSH (`auth.log`) sont analysés en continu. Les adresses IP agressives sont immédiatement bannies au niveau du pare-feu `nftables` du serveur hôte.
+  * Consultez le guide complet : [**Guide Détection d'Intrusions CrowdSec**](9-crowdsec-security.md).
+* **Authelia (SSO & 2FA Unifié)** : Pour les applications qui ne disposent pas d'une double authentification native robuste (Radarr, Sonarr, Prowlarr, Transmission), **Authelia** ([`stacks/authelia/`](../stacks/authelia/)) intercepte les requêtes dans Nginx et exige un mot de passe + TOTP ou Passkey avant d'autoriser l'accès.
+  * Consultez le guide complet : [**Guide Authentification Unique & 2FA Authelia**](10-authelia-sso-2fa.md).
 
 ---
 
 ## 7. Accès distant d'administration : VPN Mesh (Tailscale / WireGuard)
 
 * **Règle d'or** : Ne rendez **JAMAIS** vos interfaces d'administration accessibles publiquement sur Internet (pas de sous-domaine public pour Portainer, OpenMediaVault, PufferPanel, ni pour le port 81 de Nginx Proxy Manager).
-* **La méthode recommandée** :
+* **La méthode appliquée** :
   * Seuls les services destinés à un usage grand public (Jellyfin, Nextcloud, Vaultwarden) passent par le Reverse Proxy avec un sous-domaine.
-  * Pour administrer le serveur depuis l'extérieur, installez un VPN moderne de type **Tailscale** ou **WireGuard**. Vous accédez à toutes les interfaces locales via une IP privée chiffrée de bout en bout, sans ouvrir le moindre port d'administration sur votre box Internet.
+  * Pour administrer le serveur depuis l'extérieur, nous déployons **Tailscale en mode Subnet Router** ([`stacks/tailscale/`](../stacks/tailscale/)). Vous accédez à toutes les interfaces locales via une IP privée chiffrée de bout en bout, sans ouvrir le moindre port d'administration sur votre box Internet.
+  * Consultez le guide pas à pas complet : [**Guide Tailscale VPN & Subnet Router**](8-tailscale-vpn.md).
 
 ---
 
@@ -199,6 +202,41 @@ Pour maintenir le dépôt public ou privé sans risque de fuite de données :
 * **Vérifier `.gitignore`** : Ne jamais commiter de fichiers `.env`, clés privées (`.pem`, `.key`), bases de données (`.db`, `.sqlite3`) ou archives de sauvegarde.
 * **Modèles `.env.example`** : Documenter systématiquement les variables requises avec des valeurs génériques.
 * **Anonymisation** : Utiliser des noms de domaine fictifs (`mondomaine.com`) et masquer les adresses IP publiques dans la documentation.
+
+---
+
+## 11. Hygiène Système : Limitation & Rotation des Logs Docker
+
+Par défaut, Docker stocke les journaux d'exécution de chaque conteneur au format JSON dans `/var/lib/docker/containers/...` **sans aucune limite de taille**.
+
+### Le risque sur le SSD Système 480 Go
+Des conteneurs générant beaucoup d'activité (Home Assistant, Ollama, AdGuard Home ou Watchtower) peuvent accumuler des dizaines de gigaoctets de logs au fil des mois, jusqu'à saturer totalement la partition racine (`/`). Une partition racine pleine paralyse Debian, bloque MariaDB et empêche le démarrage des conteneurs.
+
+### La solution : Rotation centralisée (`/etc/docker/daemon.json`)
+Pour plafonner automatiquement les logs de l'ensemble des conteneurs sans devoir éditer chaque `docker-compose.yml` individuellement :
+
+1. Créez ou modifiez le fichier `/etc/docker/daemon.json` sur l'hôte :
+   ```json
+   {
+     "log-driver": "json-file",
+     "log-opts": {
+       "max-size": "50m",
+       "max-file": "3"
+     }
+   }
+   ```
+2. Redémarrez le service Docker pour appliquer la politique :
+   ```bash
+   sudo systemctl restart docker
+   ```
+
+* **Effet immédiat** : Chaque conteneur ne conserve que **3 fichiers de 50 Mo au maximum** (soit un plafond garanti de **150 Mo maximum par service**).
+
+> [!TIP]
+> Un script d'application automatisé en une seule commande est disponible dans le dépôt :
+> ```bash
+> sudo /srv/docker/scripts/setup_docker_log_rotation.sh
+> ```
 
 ---
 
