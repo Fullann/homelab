@@ -1,0 +1,19 @@
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    container_name: recyclarr
+    restart: unless-stopped
+    user: 1000:100
+    environment:
+      - TZ=Europe/Paris
+      # Exécution automatique de la synchronisation chaque nuit à 03h00 (format cron standard)
+      - CRON_SCHEDULE=0 3 * * *
+    volumes:
+      - ./config:/config
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true

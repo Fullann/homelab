@@ -63,11 +63,15 @@ sudo apt install unattended-upgrades -y
 sudo dpkg-reconfigure -plow unattended-upgrades
 ```
 
-### C. Nettoyage régulier de Docker (Éviter la saturation du SSD)
-Au fur et à mesure des mises à jour d'images, Docker conserve les anciennes versions périmées. Pour libérer plusieurs gigaoctets sur votre SSD :
+### C. Nettoyage et Garbage Collection Docker (Éviter la saturation du SSD de 480 Go)
+Au fur et à mesure des mises à jour continues par Watchtower, Docker accumule d'anciennes couches d'images et caches de compilation qui finissent par saturer le SSD système hôte.
+
+Une triple stratégie sans risque pour vos données est en place :
+1. **Purge automatique Watchtower** : Dans [`stacks/watchtower/docker-compose.yml`](../stacks/watchtower/docker-compose.yml), la variable `WATCHTOWER_CLEANUP=true` supprime instantanément l'ancienne image dès qu'un conteneur est mis à jour avec succès.
+2. **Conteneur périodique `docker-gc`** : Un conteneur léger de Garbage Collection tourne en arrière-plan et purge toutes les 24h les images orphelines et caches de build âgés de plus de 7 jours (`docker image prune -af --filter "until=168h"`). Vos volumes de données persistantes ne sont **JAMAIS** impactés (`--volumes=false`).
+3. **Script de maintenance manuelle** : Pour lancer un nettoyage à la demande et constater l'espace libéré :
 ```bash
-# Supprime les conteneurs arrêtés, les réseaux orphelins et les images non utilisées
-docker system prune -a --volumes=false
+./scripts/docker_system_clean.sh
 ```
 
 ---

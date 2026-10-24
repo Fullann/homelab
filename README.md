@@ -50,6 +50,7 @@ flowchart TB
                 Jellyfin["Jellyfin (8096)"]
                 Jellyseerr["Jellyseerr (5055)"]
                 Arr["Radarr (7878) / Sonarr (8989)\nLidarr (8686) / Readarr (8787)"]
+                Recyclarr["Recyclarr (TRaSH Guides)"]
                 Prowlarr["Prowlarr (9696)"]
                 Transmission["Transmission (9091)"]
                 Flare["Flaresolverr (8191)"]
@@ -76,7 +77,7 @@ flowchart TB
                 Homepage["Homepage (3000)"]
                 Portainer["Portainer (9000)"]
                 SockProxy["Docker Socket Proxy (2375)"]
-                Watchtower["Watchtower"]
+                Watchtower["Watchtower & Docker GC"]
                 Puffer["PufferPanel (8080)"]
             end
         end
@@ -124,6 +125,7 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | [**10. Authentification Unique SSO & 2FA (Authelia)**](docs/10-authelia-sso-2fa.md) | Portail d'accès unifié, double authentification (TOTP) et Passkeys WebAuthn protégeant les interfaces d'administration. |
 | [**11. Supervision Système Temps Réel (Netdata)**](docs/11-monitoring-netdata-alerts.md) | Surveillance continue du processeur, de la RAM, de l'état de la grappe RAID 5 et des attributs S.M.A.R.T. avec alertes Telegram / ntfy. |
 | [**12. Tableau de Bord Unifié (Homepage)**](docs/12-homepage-dashboard.md) | Portail d'accueil centralisé, gestion du double adressage (.local vs domaine.com) et widgets dynamiques reliés aux API applicatives. |
+| [**13. Profils TRaSH Guides & Recyclarr**](docs/13-recyclarr-trash-guides.md) | Synchronisation des profils de qualité 4K Dolby Vision/Atmos, exclusion des mauvaises releases, détection des doublons TMDB et maintenance SSD. |
 
 ---
 
@@ -159,6 +161,7 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | **Prowlarr** | `9696` | **Gestionnaire d'indexeurs** : Centralisation des trackers BitTorrent et synchronisation bidirectionnelle des configurations vers Radarr, Sonarr et Lidarr. |
 | **Transmission** | `9091` | **Client BitTorrent** : Démon de téléchargement P2P gérant le transfert effectif des flux vers le stockage RAID 5. |
 | **FlareSolverr** | `8191` | **Proxy de résolution anti-bot** : Résolution automatisée des vérifications Cloudflare pour permettre l'indexation par Prowlarr. |
+| **Recyclarr** | `Interne` | **Synchroniseur TRaSH Guides** : Injection automatique des profils de qualité 4K Dolby Vision/Atmos et exclusion des mauvaises releases dans Radarr & Sonarr. |
 
 ---
 
@@ -220,7 +223,8 @@ Toutes les configurations `docker-compose.yml` ont été assainies (secrets et d
 | **homepage** | [`stacks/homepage/`](stacks/homepage/docker-compose.yml) | `homepage` | 🔒 **Local / VPN** |
 | **netdata** | [`stacks/netdata/`](stacks/netdata/docker-compose.yml) | `netdata` | 🔒 **Local / VPN** *(Port 19999)* |
 | **pufferpanel** | [`stacks/pufferpanel/`](stacks/pufferpanel/docker-compose.yml) | `pufferpanel` | ⚠️ **Public (Jeux)** *(Admin restreint)* |
-| **watchtower** | [`stacks/watchtower/`](stacks/watchtower/docker-compose.yml) | `watchtower` | 🔒 **Local interne** |
+| **watchtower** | [`stacks/watchtower/`](stacks/watchtower/docker-compose.yml) | `watchtower`, `docker-gc` | 🔒 **Local interne** |
+| **recyclarr** | [`stacks/recyclarr/`](stacks/recyclarr/docker-compose.yml) | `recyclarr` | 🔒 **Local interne** |
 | **portainer-ce** | [`stacks/portainer-ce/`](stacks/portainer-ce/docker-compose.yml) | `portainer` | 🔒 **Local / VPN** |
 | **jarvis** | [`stacks/jarvis/`](stacks/jarvis/docker-compose.yml) | `ollama`, `open-webui`, `n8n` | 🔒 **Local / VPN** *(Ports 8080/5678 via NPM)* |
 | **tailscale** | [`stacks/tailscale/`](stacks/tailscale/docker-compose.yml) | `tailscale` | 🔒 **VPN Privé** *(Réseau Host)* |
@@ -235,6 +239,6 @@ Toutes les configurations `docker-compose.yml` ont été assainies (secrets et d
 2. **Cloisonnement réseau :** N'exposer sur Internet que les ports 80/443 du Reverse Proxy avec certificat SSL. Accéder aux panneaux d'administration (Portainer, PufferPanel, etc.) via un VPN privé (WireGuard/Tailscale).
 3. **Mots de passe & MFA :** Activer systématiquement la double authentification (2FA) sur Vaultwarden, Nextcloud et Home Assistant.
 4. **Sauvegarde 3-2-1 :** Rappelez-vous que le RAID 5 protège de la panne physique, mais ne remplace pas une vraie sauvegarde externe hors-site.
-5. **Hygiène Système & Logs :** Limiter la taille des logs Docker via `/etc/docker/daemon.json` ([`scripts/setup_docker_log_rotation.sh`](scripts/setup_docker_log_rotation.sh)) pour éviter la saturation du SSD système.
+5. **Hygiène Système & Maintien du SSD :** Rotation des logs Docker ([`scripts/setup_docker_log_rotation.sh`](scripts/setup_docker_log_rotation.sh)) et Garbage Collection automatique des images Docker orphelines ([`scripts/docker_system_clean.sh`](scripts/docker_system_clean.sh)) pour préserver le SSD de 480 Go.
 
 Consultez le [**Guide de Hardening détaillé**](docs/4-security-hardening.md) pour les instructions complètes de sécurisation SSH et système.

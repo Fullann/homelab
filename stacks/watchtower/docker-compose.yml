@@ -1,12 +1,43 @@
-version: "3"
 services:
   watchtower:
     image: containrrr/watchtower
+    container_name: watchtower
     restart: unless-stopped
     environment:
       - DOCKER_API_VERSION=1.44
+      - TZ=Europe/Paris
+      # Nettoie automatiquement les anciennes images après chaque mise à jour réussie
+      - WATCHTOWER_CLEANUP=true
+      # Exécution planifiée chaque nuit à 04h00 (format cron standard)
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      # Ne touche pas aux conteneurs arrêtés volontairement
+      - WATCHTOWER_INCLUDE_STOPPED=false
+      - WATCHTOWER_REVIVE_STOPPED=false
+      # Redémarrage progressif pour éviter l'indisponibilité simultanée
+      - WATCHTOWER_ROLLING_RESTART=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+  # Conteneur léger de Garbage Collection pour le SSD système (480 Go)
+  # Purge les images orphelines et les caches de build Docker sans toucher aux volumes de données
+  docker-gc:
+    image: docker:cli
+    container_name: docker-gc
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "[docker-gc] Service de maintenance périodique du SSD actif."
+        while true; do
+          echo "[$(date '+%Y-%m-%d %H:%M:%S')] [docker-gc] Début de la purge des images orphelines et caches (>7 jours)..."
+          docker image prune -af --filter "until=168h"
+          docker builder prune -af --filter "until=168h"
+          echo "[$(date '+%Y-%m-%d %H:%M:%S')] [docker-gc] Nettoyage terminé. Prochain cycle dans 24 heures."
+          sleep 86400
+        done
+
 networks:
   default:
     name: proxy

@@ -104,4 +104,18 @@ Lorsqu'un transcodage est actif, le pourcentage sous les colonnes `Video` et `Re
 
 ---
 
+## 4. Optimisation des profils de qualité & Maintenance de la bibliothèque
+
+### A. Injection automatique des TRaSH Guides via Recyclarr
+Pour éviter les encodages médiocres, le son mono ou les releases non désirées (CAM, TS), la stack [`stacks/recyclarr`](../stacks/recyclarr/docker-compose.yml) injecte automatiquement les profils de qualité optimaux (formats audio Dolby Atmos/TrueHD, formats vidéo Dolby Vision/HDR10, exclusion des mauvais releases).
+Consultez le [Guide Recyclarr & TRaSH Guides (13)](13-recyclarr-trash-guides.md) pour les détails complets.
+
+### B. Gestion des dossiers films doublonnés (Identifiant TMDB identique)
+Si vous constatez des dossiers en double pour le même film (par exemple `F1-(2025)-911430` et `F1 The Movie-(2025)-911430`), cela est dû à un changement de titre officiel sur TheMovieDB combiné à un remplacement de version dans Radarr.
+* **Diagnostic sans risque** : Exécutez le script [`scripts/find_duplicate_movies.sh`](../scripts/find_duplicate_movies.sh) pour lister tous les doublons TMDB, leurs tailles et leurs dates.
+* **Résolution** : Supprimez l'ancien dossier contenant la release obsolète, activez l'option *Supprimer les dossiers vides* dans Radarr (*Paramètres > Gestion des médias*), puis relancez un *Rafraîchir et analyser*.
+
+---
+
 [← Retour au README principal](../README.md)
+
