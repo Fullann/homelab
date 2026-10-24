@@ -170,4 +170,71 @@ location / {
 
 ---
 
+## 5. Gestion Multi-Services (Wildcard) & Multi-Domaines
+
+### A. Règle globale par joker (`*.mondomaine.com`)
+
+Au lieu de déclarer individuellement chaque sous-domaine (`radarr`, `sonarr`, `prowlarr`, etc.) dans `access_control.rules`, vous pouvez utiliser une règle avec caractère générique (*wildcard*) :
+
+```yaml
+access_control:
+  default_policy: deny
+  rules:
+    # 1. Le portail d'authentification lui-même (DOIT impérativement figurer en tête)
+    - domain:
+        - "auth.mondomaine.com"
+      policy: bypass
+
+    # 2. Règle générique appliquant le 2FA à tous les sous-domaines
+    - domain:
+        - "*.mondomaine.com"
+      policy: two_factor
+```
+
+* **Fonctionnement** : Tout nouveau sous-domaine configuré dans Nginx Proxy Manager avec le bloc de vérification Authelia est immédiatement protégé par 2FA, sans nécessiter de redémarrage d'Authelia ni de modification de `configuration.yml`.
+* **Ordre de priorité des règles** : Authelia évalue les règles de haut en bas et s'arrête à la première correspondance trouvée (*first match*). La règle `auth.mondomaine.com` avec la directive `bypass` doit impérativement précéder `*.mondomaine.com`, sans quoi le portail d'authentification s'auto-bloque lors du chargement de ses propres ressources (erreur HTTP 403).
+
+---
+
+### B. Architecture multi-domaines (`session.cookies`)
+
+Depuis Authelia v4.38+, une instance unique peut sécuriser plusieurs domaines racines distincts (par exemple `mondomaine.ch` et `autre-domaine.com`) :
+
+```yaml
+session:
+  name: authelia_session
+  same_site: lax
+  expiration: 2h
+  inactivity: 15m
+  remember_me: 1M
+  cookies:
+    # Domaine principal
+    - domain: "mondomaine.ch"
+      authelia_url: "https://auth.mondomaine.ch"
+      default_redirection_url: "https://mondomaine.ch"
+
+    # Deuxième domaine racine distinct
+    - domain: "autre-domaine.com"
+      authelia_url: "https://auth.mondomaine.ch"
+      default_redirection_url: "https://autre-domaine.com"
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain:
+        - "auth.mondomaine.ch"
+      policy: bypass
+
+    - domain:
+        - "*.mondomaine.ch"
+        - "*.autre-domaine.com"
+      policy: two_factor
+```
+
+* **Attribut `domain`** : Définit le périmètre de validité du cookie de session dans le navigateur. Par mesure de sécurité native au protocole web, un navigateur ne transmet jamais un cookie émis pour `mondomaine.ch` lors d'une requête vers `autre-domaine.com`. La liste `cookies` permet à Authelia d'émettre un jeton adapté à chaque domaine racine.
+* **Attribut `authelia_url`** : URL publique du portail d'authentification vers laquelle le proxy redirige les requêtes non authentifiées de ce domaine.
+* **Attribut `default_redirection_url`** : URL de repli si l'utilisateur accède au portail sans paramètre d'origine (`?rd=`).
+
+---
+
 [← Retour au README principal](../README.md)

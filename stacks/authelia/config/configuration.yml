@@ -48,11 +48,13 @@ access_control:
       policy: bypass
 
     # 2. Services d'administration protégés par 2FA obligatoire
+    # Note : Vous pouvez lister les sous-domaines un par un ou utiliser un joker global "*.mondomaine.com"
     - domain:
         - "prowlarr.mondomaine.com"
         - "radarr.mondomaine.com"
         - "sonarr.mondomaine.com"
         - "transmission.mondomaine.com"
+        # - "*.mondomaine.com"
       policy: two_factor
 
 session:
@@ -62,9 +64,14 @@ session:
   inactivity: 15m
   remember_me: 1M
   cookies:
+    # Domaine principal
     - domain: "mondomaine.com"
       authelia_url: "https://auth.mondomaine.com"
       default_redirection_url: "https://mondomaine.com"
+    # Exemple multi-domaines (si vous possédez un second domaine distinct) :
+    # - domain: "autre-domaine.com"
+    #   authelia_url: "https://auth.mondomaine.com"
+    #   default_redirection_url: "https://autre-domaine.com"
 
 regulation:
   max_retries: 3
