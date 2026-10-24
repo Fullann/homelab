@@ -240,4 +240,27 @@ Pour plafonner automatiquement les logs de l'ensemble des conteneurs sans devoir
 
 ---
 
+## 12. Optimisation Mémoire : Réglage de la Swappiness & Dimensionnement du Swap
+
+Par défaut, Debian utilise un paramètre de déclenchement du swap (`vm.swappiness`) réglé à **60** et crée une partition swap minimale (~976 Mo).
+
+### Le problème avec les conteneurs Docker
+Sur un serveur exécutant de multiples conteneurs, une swappiness élevée pousse le noyau Linux à décharger prématurément des pages mémoire vers le swap, saturant rapidement une petite partition et déclenchant des alarmes critiques de supervision (ex: Netdata), même avec plus de 10 Go de mémoire vive libre.
+
+### Les bonnes pratiques appliquées
+1. **Abaisser la swappiness à 10** pour forcer l'usage prioritaire de la mémoire vive physique :
+   ```bash
+   sudo sysctl vm.swappiness=10
+   echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
+   ```
+2. **Dimensionner un fichier swap de 4 Go** sur le SSD système pour absorber les pics ponctuels de charge sans saturation :
+   ```bash
+   sudo fallocate -l 4G /swapfile
+   sudo chmod 600 /swapfile
+   sudo mkswap /swapfile
+   sudo swapon /swapfile
+   ```
+
+---
+
 [← Retour au README principal](../README.md)

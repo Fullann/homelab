@@ -8,15 +8,21 @@ theme: dark
 color: slate
 
 layout:
-  Multimédia & Streaming:
+  Supervision & Métriques:
+    style: row
+    columns: 3
+  Multimédia & Téléchargement:
     style: row
     columns: 3
   Cloud & Données:
     style: row
     columns: 3
-  Domotique & Objets:
+  Domotique & Objets Connectés:
     style: row
     columns: 3
-  Administration & Réseau:
+  Sécurité & Administration:
     style: row
-    columns: 4
+    columns: 3
+  Intelligence Artificielle (J.A.R.V.I.S.):
+    style: row
+    columns: 2

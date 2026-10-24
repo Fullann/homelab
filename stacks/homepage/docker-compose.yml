@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
@@ -10,10 +8,11 @@ services:
       - TZ=Europe/Paris
       - HOMEPAGE_ALLOWED_HOSTS=*
     volumes:
-      # Dossier local 'config/' facile à modifier directement depuis votre éditeur
       - ./config:/app/config
-      # Connexion en lecture seule au proxy Docker pour afficher l'état des conteneurs
+      # Montage en lecture seule pour surveiller l'état des conteneurs Docker
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Montage en lecture seule du volume RAID 5 de 12 To pour le widget de stockage
+      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45:/data:ro
     restart: unless-stopped
 
 networks:

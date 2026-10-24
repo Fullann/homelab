@@ -5,8 +5,18 @@
     provider: duckduckgo
     target: _blank
 
+- openmeteo:
+    label: Météo
+    latitude: 46.2044
+    longitude: 6.1432
+    timezone: Europe/Zurich
+    units: metric
+
 - resources:
     label: Système
     cpu: true
     memory: true
     celsius: true
+    disk:
+      - /
+      - /data

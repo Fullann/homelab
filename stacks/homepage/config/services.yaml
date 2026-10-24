@@ -1,78 +1,91 @@
 # 🏠 Configuration des services Homepage
 # Documentation officielle : https://gethomepage.dev/configs/services/
+# Note : Les liens href utilisent vos noms de domaines locaux (.local) ou publics (domaine.com).
+# Les widgets communiquent directement avec les conteneurs via le réseau interne Docker 'proxy'.
 
-- Multimédia & Streaming:
+- Multimédia & Téléchargement:
     - Jellyfin:
         icon: jellyfin.png
-        href: http://jellyfin.local/
+        href: https://jellyfin.domaine.com/
         description: Serveur de streaming multimédia
-        # Pour activer les statistiques en direct :
-        # widget:
-        #   type: jellyfin
-        #   url: http://jellyfin:8096
-        #   key: VOTRE_CLE_API_JELLYFIN
+        widget:
+          type: jellyfin
+          url: http://jellyfin:8096
+          key: VOTRE_CLE_API_JELLYFIN
+          version: 2
+          enableBlocks: true
+          enableNowPlaying: false
+          fields: ["movies", "series"]
 
     - Jellyseerr:
         icon: jellyseerr.png
         href: http://jellyseerr.local/
         description: Portail de requêtes films & séries
-        # widget:
-        #   type: jellyseerr
-        #   url: http://jellyseerr:5055
-        #   key: VOTRE_CLE_API_JELLYSEERR
+        widget:
+          type: jellyseerr
+          url: http://jellyseerr:5055
+          key: VOTRE_CLE_API_JELLYSEERR
 
     - Radarr:
         icon: radarr.png
         href: http://radarr.local/
         description: Gestion automatisée des films
-        # widget:
-        #   type: radarr
-        #   url: http://radarr:7878
-        #   key: VOTRE_CLE_API_RADARR
+        widget:
+          type: radarr
+          url: http://radarr:7878
+          key: VOTRE_CLE_API_RADARR
 
     - Sonarr:
         icon: sonarr.png
         href: http://sonarr.local/
         description: Gestion automatisée des séries TV
-        # widget:
-        #   type: sonarr
-        #   url: http://sonarr:8989
-        #   key: VOTRE_CLE_API_SONARR
+        widget:
+          type: sonarr
+          url: http://sonarr:8989
+          key: VOTRE_CLE_API_SONARR
 
     - Transmission:
         icon: transmission.png
         href: http://transmission.local/
         description: Client de téléchargement BitTorrent
-        # widget:
-        #   type: transmission
-        #   url: http://transmission:9091
+        widget:
+          type: transmission
+          url: http://transmission:9091
 
     - Prowlarr:
         icon: prowlarr.png
         href: http://prowlarr.local/
         description: Gestionnaire centralisé des indexeurs
+        widget:
+          type: prowlarr
+          url: http://prowlarr:9696
+          key: VOTRE_CLE_API_PROWLARR
 
 - Cloud & Données:
     - Nextcloud:
         icon: nextcloud.png
-        href: https://cloud.mondomaine.com/
-        description: Cloud privé, fichiers & agenda
+        href: https://cloud.domaine.com/
+        description: Cloud privé, documents & synchronisation
 
     - PhotoPrism:
         icon: photoprism.png
-        href: https://photos.mondomaine.com/
+        href: https://photos.domaine.com/
         description: Galerie photo avec indexation IA
 
     - Vaultwarden:
         icon: vaultwarden.png
-        href: https://passwords.mondomaine.com/
+        href: https://bitwarden.domaine.com/
         description: Coffre-fort de mots de passe chiffré
 
-- Domotique & Objets:
+- Domotique & Objets Connectés:
     - Home Assistant:
         icon: home-assistant.png
-        href: http://homeassistant.local:8123/
+        href: https://maison.domaine.com/
         description: Cœur domotique de la maison
+        widget:
+          type: homeassistant
+          url: http://homeassistant:8123
+          key: VOTRE_TOKEN_ACCES_LONGUE_DUREE
 
     - ESPHome:
         icon: esphome.png
@@ -81,43 +94,75 @@
 
     - Zigbee2MQTT:
         icon: zigbee2mqtt.png
-        href: http://zigbee2mqtt.local/
+        href: http://zigbee.local/
         description: Passerelle radio capteurs Zigbee
 
-- Administration & Réseau:
-    - OpenMediaVault:
-        icon: openmediavault.png
-        href: http://omv.local/
-        description: Gestionnaire NAS & Grappe RAID 5
+- Supervision & Métriques:
+    - Netdata:
+        icon: netdata.png
+        href: http://netdata.local/
+        description: Télémétrie système, CPU, RAM & santé SMART RAID 5
+        widget:
+          type: netdata
+          url: http://192.168.1.3:19999
 
-    - Portainer:
-        icon: portainer.png
-        href: http://portainer.local/
-        description: Gestion visuelle des conteneurs Docker
-
-    - Nginx Proxy Manager:
-        icon: nginx-proxy-manager.png
-        href: http://proxy.local:81/
-        description: Reverse Proxy & Gestion des certificats SSL
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: http://uptime.local/
+        description: Surveillance de disponibilité & sondes HTTP
+        widget:
+          type: uptimekuma
+          url: http://uptime-kuma:3001
+          slug: default
 
     - AdGuard Home:
         icon: adguard-home.png
         href: http://adguard.local/
-        description: Serveur DNS & Bloqueur de publicités
+        description: Résolveur DNS & filtrage des publicités
+        widget:
+          type: adguard
+          url: http://192.168.1.3:3000
+          username: admin
+          password: VOTRE_MOT_DE_PASSE
 
-    - Uptime Kuma:
-        icon: uptime-kuma.png
-        href: http://kuma.local/
-        description: Surveillance de santé et alertes de panne
+- Sécurité & Administration:
+    - OpenMediaVault:
+        icon: openmediavault.png
+        href: http://omv.local/
+        description: Gestionnaire NAS & Grappe RAID 5 (12 To)
 
-- Intelligence Artificielle & Automatisation (J.A.R.V.I.S.):
+    - Portainer:
+        icon: portainer.png
+        href: http://portainer.local/
+        description: Orchestration visuelle des conteneurs Docker
+
+    - Nginx Proxy Manager:
+        icon: nginx-proxy-manager.png
+        href: http://proxy.local:81/
+        description: Reverse Proxy, sous-domaines & certificats SSL
+
+    - Authelia:
+        icon: authelia.png
+        href: https://auth.domaine.com/
+        description: Portail SSO & Double Authentification 2FA
+
+    - CrowdSec:
+        icon: crowdsec.png
+        href: https://app.crowdsec.net/
+        description: Détection d'intrusions & pare-feu bouncer
+
+    - Tailscale:
+        icon: tailscale.png
+        href: https://login.tailscale.com/admin/machines
+        description: VPN Mesh & Subnet Router d'administration
+
+- Intelligence Artificielle (J.A.R.V.I.S.):
     - Open WebUI:
         icon: open-webui.png
         href: http://chat.jarvis.local/
-        description: Cerveau LLM & RAG Documentaire Nextcloud
+        description: Interface LLM locale connectée à Ollama
 
     - n8n:
         icon: n8n.png
         href: http://n8n.jarvis.local/
-        description: Orchestrateur de flux & Webhooks agentiques
-
+        description: Orchestrateur d'automatisations & agents IA

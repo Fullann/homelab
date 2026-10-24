@@ -122,6 +122,8 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | [**8. VPN Mesh Tailscale & Subnet Router**](docs/8-tailscale-vpn.md) | Accès distant d'administration chiffré (WireGuard), routage du sous-réseau local `192.168.1.0/24` (Subnet Router), mode Exit Node et zéro port ouvert. |
 | [**9. Détection d'Intrusions & Bannissement IP (CrowdSec)**](docs/9-crowdsec-security.md) | Analyse en temps réel des journaux NPM et SSH, blocage automatique des bots malveillants via le pare-feu Linux (nftables). |
 | [**10. Authentification Unique SSO & 2FA (Authelia)**](docs/10-authelia-sso-2fa.md) | Portail d'accès unifié, double authentification (TOTP) et Passkeys WebAuthn protégeant les interfaces d'administration. |
+| [**11. Supervision Système Temps Réel (Netdata)**](docs/11-monitoring-netdata-alerts.md) | Surveillance continue du processeur, de la RAM, de l'état de la grappe RAID 5 et des attributs S.M.A.R.T. avec alertes Telegram / ntfy. |
+| [**12. Tableau de Bord Unifié (Homepage)**](docs/12-homepage-dashboard.md) | Portail d'accueil centralisé, gestion du double adressage (.local vs domaine.com) et widgets dynamiques reliés aux API applicatives. |
 
 ---
 
@@ -188,6 +190,7 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | **Tailscale** | `Host / VPN` | **Passerelle VPN Mesh & Subnet Router** : Tunnel WireGuard chiffré reliant vos appareils mobiles au sous-réseau local (`192.168.1.0/24`) et mode Exit Node sans ouvrir aucun port. |
 | **CrowdSec** | `LAPI / Host` | **Système de détection d'intrusions (IDS/IPS)** : Analyse comportementale des logs Nginx et SSH avec bannissement automatique dans le pare-feu de l'hôte. |
 | **Authelia** | `9091` | **Serveur d'authentification SSO & 2FA** : Passerelle de contrôle d'accès protégeant les sous-domaines sensibles par double facteur TOTP ou Passkey. |
+| **Netdata** | `19999` | **Télémétrie système et surveillance RAID** : Métriques matérielles en temps réel, santé des disques S.M.A.R.T., températures et alertes automatiques. |
 
 ---
 
@@ -215,6 +218,7 @@ Toutes les configurations `docker-compose.yml` ont été assainies (secrets et d
 | **adguard** | [`stacks/adguard/`](stacks/adguard/docker-compose.yml) | `adguardhome` | 🔒 **Local / LAN** |
 | **uptime-kuma** | [`stacks/uptime-kuma/`](stacks/uptime-kuma/docker-compose.yml) | `uptime-kuma` | ⚠️ **Page Statut Publique** *(Admin en Local)* |
 | **homepage** | [`stacks/homepage/`](stacks/homepage/docker-compose.yml) | `homepage` | 🔒 **Local / VPN** |
+| **netdata** | [`stacks/netdata/`](stacks/netdata/docker-compose.yml) | `netdata` | 🔒 **Local / VPN** *(Port 19999)* |
 | **pufferpanel** | [`stacks/pufferpanel/`](stacks/pufferpanel/docker-compose.yml) | `pufferpanel` | ⚠️ **Public (Jeux)** *(Admin restreint)* |
 | **watchtower** | [`stacks/watchtower/`](stacks/watchtower/docker-compose.yml) | `watchtower` | 🔒 **Local interne** |
 | **portainer-ce** | [`stacks/portainer-ce/`](stacks/portainer-ce/docker-compose.yml) | `portainer` | 🔒 **Local / VPN** |
