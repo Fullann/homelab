@@ -58,7 +58,18 @@ La configuration se trouve dans [`stacks/authelia/`](../stacks/authelia/) :
    ```
    Renseignez le hash obtenu dans le champ `password` de l'utilisateur `admin` dans `config/users_database.yml`.
 
-5. Démarrez le service :
+5. Adaptez `config/configuration.yml` avec votre nom de domaine réel :
+   * Dans `access_control.rules` : déclarez votre portail `auth.mondomaine.com` en `bypass`, puis vos services en `two_factor`.
+   * Dans `session.cookies` : renseignez votre domaine racine et l'URL publique de votre portail :
+     ```yaml
+     session:
+       cookies:
+         - domain: "mondomaine.com"
+           authelia_url: "https://auth.mondomaine.com"
+           default_redirection_url: "https://mondomaine.com"
+     ```
+
+6. Démarrez le service :
    ```bash
    docker compose up -d
    ```
@@ -137,6 +148,10 @@ location / {
 
 > [!IMPORTANT]
 > **Règle de portée du cookie SSO :** Le portail Authelia et les sous-domaines protégés doivent partager le même domaine racine (ex: `radarr.mondomaine.com` et `auth.mondomaine.com`). Un domaine local indépendant (ex: `.local` ou IP brute) ne peut pas recevoir le cookie de session émis sur le domaine public.
+
+> [!WARNING]
+> **Cas particulier de Vaultwarden / Bitwarden :**
+> Les applications mobiles et extensions de navigateur Bitwarden synchronisent leurs coffres via des appels d'API REST directs (`/api`, `/identity`). Si Nginx intercepte ces requêtes et renvoie une redirection HTTP 302 vers la page de connexion Authelia, la synchronisation du coffre échoue sur tous les clients mobiles et navigateurs. Il est recommandé de laisser Vaultwarden gérer sa double authentification nativement (TOTP, WebAuthn/Passkey) sans filtre Authelia, ou de n'intercepter que l'interface Web en excluant les routes d'API.
 
 ---
 

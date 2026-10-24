@@ -57,11 +57,14 @@ access_control:
 
 session:
   name: authelia_session
-  domain: mondomaine.com
   same_site: lax
   expiration: 2h
   inactivity: 15m
   remember_me: 1M
+  cookies:
+    - domain: "mondomaine.com"
+      authelia_url: "https://auth.mondomaine.com"
+      default_redirection_url: "https://mondomaine.com"
 
 regulation:
   max_retries: 3
