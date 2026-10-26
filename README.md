@@ -126,6 +126,8 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | [**11. Supervision Système Temps Réel (Netdata)**](docs/11-monitoring-netdata-alerts.md) | Surveillance continue du processeur, de la RAM, de l'état de la grappe RAID 5 et des attributs S.M.A.R.T. avec alertes Telegram / ntfy. |
 | [**12. Tableau de Bord Unifié (Homepage)**](docs/12-homepage-dashboard.md) | Portail d'accueil centralisé, gestion du double adressage (.local vs domaine.com) et widgets dynamiques reliés aux API applicatives. |
 | [**13. Profils TRaSH Guides & Recyclarr**](docs/13-recyclarr-trash-guides.md) | Synchronisation des profils de qualité 4K Dolby Vision/Atmos, exclusion des mauvaises releases, détection des doublons TMDB et maintenance SSD. |
+| [**14. Logs Temps Réel & Alertes Push (Dozzle & ntfy)**](docs/14-monitoring-logs-alerts-ntfy-dozzle.md) | Visualisation instantanée des journaux Docker via Dozzle et serveur de notifications push universel ntfy pour smartphones. |
+| [**15. Sauvegarde Chiffrée Distante (Restic & o2switch)**](docs/15-offsite-backup-restic-o2switch.md) | Chiffrement client Zero-Knowledge (AES-256), synchronisation incrémentale SFTP vers o2switch et restauration après sinistre. |
 
 ---
 

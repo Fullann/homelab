@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    command:
+      - serve
+    environment:
+      - TZ=Europe/Paris
+      - NTFY_BEHIND_PROXY=true
+      - NTFY_ATTACHMENT_CACHE_DIR=/var/cache/ntfy/attachments
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+      - NTFY_AUTH_FILE=/var/lib/ntfy/user.db
+      - NTFY_AUTH_DEFAULT_ACCESS=read-write
+      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_data:/var/lib/ntfy
+      - ./server.yml:/etc/ntfy/server.yml:ro
+    ports:
+      # Port direct pour scripts locaux (backup_nas.sh, cron) sans dépendance NPM
+      - "2586:80"
+    networks:
+      - default
+
+volumes:
+  ntfy_cache:
+  ntfy_data:
+
+networks:
+  default:
+    name: proxy
+    external: true

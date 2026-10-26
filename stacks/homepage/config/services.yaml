@@ -125,6 +125,16 @@
           username: admin
           password: VOTRE_MOT_DE_PASSE
 
+    - Dozzle:
+        icon: dozzle.png
+        href: http://logs.local/
+        description: Visualiseur de journaux Docker en temps réel
+
+    - ntfy:
+        icon: ntfy.png
+        href: http://ntfy.local/
+        description: Serveur de notifications push universel
+
 - Sécurité & Administration:
     - OpenMediaVault:
         icon: openmediavault.png

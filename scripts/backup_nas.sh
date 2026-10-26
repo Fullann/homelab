@@ -246,3 +246,16 @@ echo ""
 echo "💡 Vous pouvez maintenant débrancher votre disque en toute sécurité :"
 echo "   sudo umount $MOUNT_POINT"
 echo "========================================================================"
+
+# Notification Push via ntfy (si configuré)
+NTFY_URL="${NTFY_URL:-http://localhost:2586/homelab-backups}"
+if [ -n "$NTFY_URL" ]; then
+    DISK_FREE=$(df -h "$MOUNT_POINT" | awk 'NR==2 {print $4}')
+    curl -s \
+        -H "Title: 💾 Sauvegarde NAS Réussie" \
+        -H "Priority: default" \
+        -H "Tags: white_check_mark,floppy_disk" \
+        -d "Sauvegarde sur disque 2 To terminée en ${MINUTES}m ${SECS}s. Espace libre : ${DISK_FREE}." \
+        "$NTFY_URL" >/dev/null 2>&1 || true
+fi
+

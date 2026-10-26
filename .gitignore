@@ -16,6 +16,9 @@ config/
 stacks/authelia/config/*
 !stacks/authelia/config/configuration.yml
 !stacks/authelia/config/users_database.yml.example
+!stacks/recyclarr/config/
+stacks/recyclarr/config/*
+!stacks/recyclarr/config/recyclarr.yml.example
 volumes/
 *.db
 *.sqlite

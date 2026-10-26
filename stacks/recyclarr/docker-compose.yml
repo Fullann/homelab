@@ -3,7 +3,7 @@ services:
     image: ghcr.io/recyclarr/recyclarr:8
     container_name: recyclarr
     restart: unless-stopped
-    user: 1000:100
+    user: 1000:1000
     environment:
       - TZ=Europe/Paris
       # Exécution automatique de la synchronisation chaque nuit à 03h00 (format cron standard)

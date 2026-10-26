@@ -1,0 +1,29 @@
+# ==============================================================================
+# 🔔 Configuration du serveur ntfy
+# Documentation : https://docs.ntfy.sh/config/
+# ==============================================================================
+
+# Port d'écoute interne HTTP
+listen-http: ":80"
+
+# URL publique de votre serveur ntfy (à remplacer par votre domaine si exposé)
+# base-url: "https://ntfy.domaine.com"
+
+# Indique à ntfy qu'il se trouve derrière le reverse proxy Nginx Proxy Manager
+behind-proxy: true
+
+# Répertoires de cache et base de données SQLite pour l'historique et les pièces jointes
+cache-file: "/var/cache/ntfy/cache.db"
+cache-duration: "12h"
+attachment-cache-dir: "/var/cache/ntfy/attachments"
+attachment-total-size-limit: "5G"
+attachment-file-size-limit: "15M"
+attachment-expiry-duration: "3h"
+
+# Gestion des utilisateurs et droits d'accès
+# Par défaut : accès en lecture-écriture sur les topics locaux
+auth-file: "/var/lib/ntfy/user.db"
+auth-default-access: "read-write"
+
+# Pour les notifications push sur iOS (relais via le serveur officiel ntfy.sh)
+upstream-base-url: "https://ntfy.sh"

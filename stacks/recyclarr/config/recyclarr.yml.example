@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://schemas.recyclarr.dev/v8/config-schema.json
+# ==============================================================================
+# Configuration Recyclarr - Synchronisation des profils TRaSH Guides
+# Documentation : https://recyclarr.dev | Guides : https://trash-guides.info
+# ==============================================================================
+
+# ==============================================================================
+# 🎬 RADARR (Gestion et scoring de qualité pour les FILMS)
+# ==============================================================================
+radarr:
+  movies:
+    # Communication interne via le réseau Docker 'proxy'
+    base_url: http://radarr:7878
+    # Clé API à récupérer dans Radarr : Paramètres > Général > Clé API
+    api_key: VOTRE_CLE_API_RADARR
+
+    # Supprime les anciens formats personnalisés orphelins non gérés par le guide
+    delete_old_custom_formats: true
+
+    # Synchronise les tailles de fichiers minimales et maximales par niveau de qualité (TRaSH Guides)
+    quality_definition:
+      type: movie
+
+    # Profils de qualité gérés directement par le guide (Guide-Backed Quality Profiles)
+    # Injecte automatiquement les Custom Formats, scores, exclusions de mauvaises releases,
+    # et priorités audio (Dolby Atmos, TrueHD, DTS-HD MA) et vidéo (Dolby Vision, HDR10+)
+    quality_profiles:
+      # 1. Profil 1080p Optimal (HD Bluray + WEB)
+      - trash_id: d1d67249d3890e49bc12e275d989a7e9
+        reset_unmatched_scores:
+          enabled: true
+
+      # 2. Profil 4K UHD Optimal (UHD Bluray + WEB) - HDR10, Dolby Vision & Atmos
+      - trash_id: 64fb5f9858489bdac2af690e27c8f42f
+        reset_unmatched_scores:
+          enabled: true
+
+      # 3. Profil Remux + WEB 1080p (Qualité disque sans perte)
+      - trash_id: 9ca12ea80aa55ef916e3751f4b874151
+        reset_unmatched_scores:
+          enabled: true
+
+      # 4. Profil Remux + WEB 2160p (4K UHD Remux sans perte)
+      - trash_id: fd161a61e3ab826d3a22d53f935696dd
+        reset_unmatched_scores:
+          enabled: true
+
+# ==============================================================================
+# 📺 SONARR (Gestion et scoring de qualité pour les SÉRIES)
+# ==============================================================================
+sonarr:
+  series:
+    # Communication interne via le réseau Docker 'proxy'
+    base_url: http://sonarr:8989
+    # Clé API à récupérer dans Sonarr : Paramètres > Général > Clé API
+    api_key: VOTRE_CLE_API_SONARR
+
+    delete_old_custom_formats: true
+
+    # Synchronise les tailles optimales d'épisodes (séries standard et animés)
+    quality_definition:
+      type: series
+
+    quality_profiles:
+      # 1. Profil Séries 1080p Optimal (WEB-1080p)
+      - trash_id: 72dae194fc92bf828f32cde7744e51a1
+        reset_unmatched_scores:
+          enabled: true
+
+      # 2. Profil Séries 4K UHD (WEB-2160p)
+      - trash_id: d1498e7d189fbe6c7110ceaabb7473e6
+        reset_unmatched_scores:
+          enabled: true
