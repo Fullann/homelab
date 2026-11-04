@@ -67,10 +67,15 @@
         href: https://cloud.domaine.com/
         description: Cloud privé, documents & synchronisation
 
-    - PhotoPrism:
-        icon: photoprism.png
+    - Immich:
+        icon: immich.png
         href: https://photos.domaine.com/
-        description: Galerie photo avec indexation IA
+        description: Galerie photo unifiée & sauvegarde mobile IA
+        widget:
+          type: immich
+          url: http://immich_server:2283
+          key: VOTRE_CLE_API_IMMICH
+          version: 2
 
     - Vaultwarden:
         icon: vaultwarden.png

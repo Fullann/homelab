@@ -21,10 +21,10 @@ if docker ps --format '{{.Names}}' | grep -q "^mariadb$"; then
     docker exec mariadb mariadb-dump -u root --all-databases > "$TMP_DIR/nextcloud_all_databases.sql" 2>/dev/null || echo "⚠️ Avertissement : échec du dump mariadb"
 fi
 
-# 2. Sauvegarde de la base PhotoPrism (MariaDB)
-if docker ps --format '{{.Names}}' | grep -q "^photoprism-db$"; then
-    echo "[$(date +'%T')] 📦 Export SQL de la base PhotoPrism..."
-    docker exec photoprism-db mariadb-dump -u root --all-databases > "$TMP_DIR/photoprism_all_databases.sql" 2>/dev/null || echo "⚠️ Avertissement : échec du dump photoprism-db"
+# 2. Sauvegarde de la base Immich (PostgreSQL)
+if docker ps --format '{{.Names}}' | grep -q "^immich_postgres$"; then
+    echo "[$(date +'%T')] 📦 Export SQL de la base Immich (PostgreSQL)..."
+    docker exec immich_postgres pg_dumpall --clean --if-exists --username=postgres > "$TMP_DIR/immich_all_databases.sql" 2>/dev/null || echo "⚠️ Avertissement : échec du dump immich_postgres"
 fi
 
 # 3. Sauvegarde à chaud de Vaultwarden (SQLite)

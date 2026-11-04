@@ -29,14 +29,13 @@ DEST_BASE="$MOUNT_POINT/backups_nas"
 BACKUP_DB="$DEST_BASE/databases"
 BACKUP_CONFIGS="$DEST_BASE/configurations"
 BACKUP_NEXTCLOUD="$DEST_BASE/nextcloud"
-BACKUP_PHOTOPRISM="$DEST_BASE/photoprism"
+BACKUP_IMMICH="$DEST_BASE/immich"
 BACKUP_TRASH="$DEST_BASE/corbeille_suppressions"
 
 # Répertoire source du volume RAID 5 OpenMediaVault
 DISK_ROOT="/srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45"
 DATA_NEXTCLOUD="$DISK_ROOT/nextcloud"
-DATA_PP_STORAGE="$DISK_ROOT/photoprism"
-DATA_PP_IMPORT="$DISK_ROOT/media/PHOTO_IMPORT"
+DATA_IMMICH_LIBRARY="$DISK_ROOT/immich/library"
 
 # Identifiants bases de données (avec valeurs par défaut si non définies dans /etc/homelab-backup.env)
 NC_DB_CONTAINER="${NC_DB_CONTAINER:-mariadb}"
@@ -44,10 +43,8 @@ NC_DB_USER="${NC_DB_USER:-nextcloud_usr}"
 NC_DB_PASS="${NC_DB_PASS:-change_me_user_password}"
 NC_DB_NAME="${NC_DB_NAME:-nextcloud_db}"
 
-PP_DB_CONTAINER="${PP_DB_CONTAINER:-photoprism-db}"
-PP_DB_USER="${PP_DB_USER:-photoprism}"
-PP_DB_PASS="${PP_DB_PASS:-change_me_db_password}"
-PP_DB_NAME="${PP_DB_NAME:-photoprism}"
+IMMICH_DB_CONTAINER="${IMMICH_DB_CONTAINER:-immich_postgres}"
+IMMICH_DB_USER="${IMMICH_DB_USER:-postgres}"
 
 # Durée de rétention des archives et corbeille (en jours)
 RETENTION_DAYS=60        # ~8 semaines d'historique pour les dumps BDD et configs
@@ -62,7 +59,7 @@ if ! mountpoint -q "$MOUNT_POINT"; then
     exit 1
 fi
 
-mkdir -p "$BACKUP_DB" "$BACKUP_CONFIGS" "$BACKUP_NEXTCLOUD" "$BACKUP_PHOTOPRISM" "$BACKUP_TRASH"
+mkdir -p "$BACKUP_DB" "$BACKUP_CONFIGS" "$BACKUP_NEXTCLOUD" "$BACKUP_IMMICH" "$BACKUP_TRASH"
 echo "========================================================================"
 echo "🚀 Démarrage de la sauvegarde hebdomadaire ($DATE)"
 echo "   Cible : $DEST_BASE"
@@ -112,14 +109,13 @@ if docker ps --format '{{.Names}}' | grep -q "^nextcloud$"; then
     docker exec -u "$NC_USER" nextcloud php /app/www/public/occ maintenance:mode --off >/dev/null 2>&1 || true
 fi
 
-# Export SQL PhotoPrism
-if docker ps --format '{{.Names}}' | grep -q "^${PP_DB_CONTAINER}$"; then
-    echo "[+] [3/6] Export SQL de la base PhotoPrism..."
-    docker exec -e MYSQL_PWD="$PP_DB_PASS" "$PP_DB_CONTAINER" mariadb-dump \
-        -u "$PP_DB_USER" \
-        --single-transaction \
-        --quick \
-        "$PP_DB_NAME" | gzip -1 > "$BACKUP_DB/photoprism_${DATE}.sql.gz"
+# Export SQL Immich (PostgreSQL)
+if docker ps --format '{{.Names}}' | grep -q "^${IMMICH_DB_CONTAINER}$"; then
+    echo "[+] [3/6] Export SQL de la base Immich (PostgreSQL)..."
+    docker exec "$IMMICH_DB_CONTAINER" pg_dumpall \
+        --clean \
+        --if-exists \
+        --username="$IMMICH_DB_USER" | gzip -1 > "$BACKUP_DB/immich_${DATE}.sql.gz"
 fi
 
 # ==============================================================================
@@ -202,18 +198,13 @@ if [ -d "$DATA_NEXTCLOUD" ]; then
         "$DATA_NEXTCLOUD/" "$BACKUP_NEXTCLOUD/data/"
 fi
 
-# Synchronisation PhotoPrism
-if [ -d "$DATA_PP_STORAGE" ]; then
-    echo "    -> Synchronisation de la photothèque PhotoPrism..."
+# Synchronisation Immich (exclusion des miniatures et vidéos réencodées pour la rapidité)
+if [ -d "$DATA_IMMICH_LIBRARY" ]; then
+    echo "    -> Synchronisation de la photothèque unifiée Immich..."
     rsync $RSYNC_OPTS \
-        --exclude="cache/*" \
-        "$DATA_PP_STORAGE/" "$BACKUP_PHOTOPRISM/storage/"
-fi
-
-if [ -d "$DATA_PP_IMPORT" ]; then
-    echo "    -> Synchronisation du dossier import photos..."
-    rsync $RSYNC_OPTS \
-        "$DATA_PP_IMPORT/" "$BACKUP_PHOTOPRISM/import/"
+        --exclude="thumbs/*" \
+        --exclude="encoded-video/*" \
+        "$DATA_IMMICH_LIBRARY/" "$BACKUP_IMMICH/library/"
 fi
 
 # ==============================================================================

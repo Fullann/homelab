@@ -45,11 +45,9 @@ Ce volume est ensuite segmenté en dossiers partagés dédiés que les conteneur
 │   ├── SERIE/                 <-- Séries TV gérées par Sonarr
 │   ├── MUSIC/                 <-- Albums gérés par Lidarr
 │   ├── BOOK/                  <-- Ebooks & Audiobooks gérés par Readarr
-│   ├── PHOTO_IMPORT/          <-- Dossier tampon d'ingestion PhotoPrism
 │   └── transcode/             <-- Cache temporaire pour le transcodage Jellyfin
 ├── nextcloud/                 <-- Données personnelles des utilisateurs Nextcloud
-├── photoprism/                <-- Stockage des miniatures, index et originaux
-└── photoprism-database/       <-- Base de données relationnelle MariaDB (fichiers tables)
+└── immich/                    <-- Photothèque unifiée (library/) & base PostgreSQL (postgres/)
 ```
 
 ---

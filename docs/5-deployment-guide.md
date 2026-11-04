@@ -19,7 +19,7 @@ Voici la procédure intégrale pour reconstruire ce serveur depuis zéro :
    * Cliquez sur **+** > sélectionnez `/dev/md0` > choisissez le système de fichiers `ext4` et validez.
    * Cliquez sur l'icône **Monter** pour activer le point de montage `/srv/dev-disk-by-uuid-...`.
 4. Allez dans **Stockage** > **Dossiers partagés** :
-   * Créez les dossiers partagés racines : `media`, `nextcloud`, `photoprism`.
+   * Créez les dossiers partagés racines : `media`, `nextcloud`, `immich`.
 
 ### 2. Préparation de Docker et du réseau privé
 1. Dans OMV, installez le plugin `omv-extras` puis activez **Docker** et **Portainer**.

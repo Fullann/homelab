@@ -165,10 +165,10 @@ Pour respecter la règle 3-2-1 sans complexité inutile, deux scripts complémen
 ### A. Sauvegarde hebdomadaire rapide sur disque externe USB 2 To ([`scripts/backup_nas.sh`](../scripts/backup_nas.sh))
 
 Ce script est spécifiquement optimisé pour le disque externe branché une fois par semaine :
-* **Performance maximale (2 à 5 minutes chrono)** : Utilise `rsync` incrémental pour ne transférer que les nouveaux fichiers créés dans la semaine (Nextcloud et PhotoPrism).
+* **Performance maximale (2 à 5 minutes chrono)** : Utilise `rsync` incrémental pour ne transférer que les nouveaux fichiers créés dans la semaine (Nextcloud et Immich).
 * **Zéro compression inutile sur les médias** : Les photos et vidéos étant déjà compressées, elles sont copiées directement. Seuls les dumps SQL et configurations textuelles sont compressés.
-* **Exclusion stricte des caches** : Évite les centaines de milliers de fichiers temporaires de prévisualisation (`appdata_*/preview/*`), accélérant le transfert.
-* **Couverture complète** : Sauvegarde MariaDB (Nextcloud et PhotoPrism), Vaultwarden (SQLite `.backup`), Home Assistant / Zigbee2MQTT et les certificats Nginx Proxy Manager.
+* **Exclusion stricte des caches** : Évite les centaines de milliers de fichiers temporaires de prévisualisation (`appdata_*/preview/*`, `thumbs/*`), accélérant le transfert.
+* **Couverture complète** : Sauvegarde MariaDB (Nextcloud), PostgreSQL (Immich), Vaultwarden (SQLite `.backup`), Home Assistant / Zigbee2MQTT et les certificats Nginx Proxy Manager.
 * **Corbeille anti-suppression accidentelle (`--backup-dir`)** : Si un fichier a été supprimé sur le NAS, il est déplacé dans une corbeille datée sur le disque externe et conservé 30 jours au lieu d'être immédiatement perdu.
 * **Sécurité à l'éjection** : Exécute automatiquement `sync` à la fin pour vider les tampons de mémoire vive vers le disque USB physique avant démontage.
 

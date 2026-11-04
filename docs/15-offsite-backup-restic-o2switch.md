@@ -1,6 +1,6 @@
 # Guide : Sauvegarde Distante Chiffrée (Zero-Knowledge) vers o2switch via SFTP & Restic
 
-Ce guide décrit la mise en place d'une sauvegarde externalisée automatique et chiffrée de bout en bout de vos données sensibles (Vaultwarden, bases de données Nextcloud / PhotoPrism, fichiers de configuration Docker et Home Assistant) vers votre hébergement **o2switch**.
+Ce guide décrit la mise en place d'une sauvegarde externalisée automatique et chiffrée de bout en bout de vos données sensibles (Vaultwarden, bases de données Nextcloud / Immich, fichiers de configuration Docker et Home Assistant) vers votre hébergement **o2switch**.
 
 ---
 
@@ -139,7 +139,7 @@ sudo /srv/docker/scripts/backup_offsite_restic.sh
 ```
 
 À la fin de la sauvegarde :
-1. Vos bases de données (Nextcloud, PhotoPrism), votre coffre Vaultwarden et vos configurations sont chiffrés et transmis.
+1. Vos bases de données (Nextcloud, Immich), votre coffre Vaultwarden et vos configurations sont chiffrés et transmis.
 2. Une notification push **ntfy** s'affiche instantanément sur votre smartphone sur le topic `homelab-backups`.
 
 ---

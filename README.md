@@ -8,15 +8,17 @@ Il centralise l'ensemble de mes services domotiques, multimédias, cloud privé,
 
 ## 🧭 Sommaire
 
-- [Vue d'ensemble & Architecture](#-vue-densemble--architecture)
-- [📚 Guides & Documentation Détaillée (`docs/`)](#-guides--documentation-détaillée-docs)
-- [📖 Guide des Services](#-guide-des-services)
-  - [1. Domotique, IoT & IA Vocale Locale](#1-domotique-iot--ia-vocale-locale)
-  - [2. Streaming & Multimédia (Servarr Stack)](#2-streaming--multimédia-servarr-stack)
-  - [3. Cloud Personnel, Photos & Mots de passe](#3-cloud-personnel-photos--mots-de-passe)
-  - [4. Réseau, Administration & Monitoring](#4-réseau-administration--monitoring)
-- [🗂 Organisation des Stacks Docker](#-organisation-des-stacks-docker)
-- [🔒 Principes de Sécurité Essentiels](#-principes-de-sécurité-essentiels)
+- [🏠 Mon Homelab Personnel sous OpenMediaVault (OMV)](#-mon-homelab-personnel-sous-openmediavault-omv)
+  - [🧭 Sommaire](#-sommaire)
+  - [🏗 Vue d'ensemble \& Architecture](#-vue-densemble--architecture)
+  - [📚 Guides \& Documentation Détaillée (`docs/`)](#-guides--documentation-détaillée-docs)
+  - [📖 Guide des Services](#-guide-des-services)
+    - [1. Domotique, IoT \& IA Vocale Locale](#1-domotique-iot--ia-vocale-locale)
+    - [2. Streaming \& Multimédia (Servarr Stack)](#2-streaming--multimédia-servarr-stack)
+    - [3. Cloud Personnel, Photos \& Mots de passe](#3-cloud-personnel-photos--mots-de-passe)
+    - [4. Réseau, Administration \& Monitoring](#4-réseau-administration--monitoring)
+  - [🗂 Organisation des Stacks Docker](#-organisation-des-stacks-docker)
+  - [🔒 Principes de Sécurité Essentiels](#-principes-de-sécurité-essentiels)
 
 ---
 
@@ -60,7 +62,7 @@ flowchart TB
                 Nextcloud["Nextcloud (80)"]
                 MariaDB["MariaDB (3306)"]
                 Collabora["Collabora Online (9980)"]
-                PhotoPrism["PhotoPrism (2342)"]
+                Immich["Immich (2283)"]
                 Vaultwarden["Vaultwarden (80)"]
             end
 
@@ -101,7 +103,7 @@ flowchart TB
     NPM -->|http://homepage:3000| Homepage
     NPM -->|http://jellyseerr:5055| Jellyseerr
     NPM -->|http://uptime-kuma:3001| Kuma
-    NPM -->|http://photoprism:2342| PhotoPrism
+    NPM -->|http://immich_server:2283| Immich
     NPM -->|http://collabora:9980| Collabora
 ```
 
@@ -174,8 +176,8 @@ Pour approfondir chaque aspect de l'infrastructure, consultez les guides modulai
 | **Nextcloud** | `80` | **Plateforme collaborative et stockage cloud** : Synchronisation de fichiers, contacts, agendas et documents avec authentification multifacteur (2FA). |
 | **MariaDB (Nextcloud)** | `3306` | **Base de données relationnelle** : Stockage transactionnel des index, partages et métadonnées de l'instance Nextcloud. |
 | **Collabora Online** | `9980` | **Moteur bureautique en ligne** : Édition collaborative en temps réel de documents Office (DOCX, XLSX, PPTX) intégrée à Nextcloud. |
-| **PhotoPrism** | `2342` | **Gestionnaire de photothèque** : Indexation d'images avec analyse de métadonnées EXIF, géolocalisation et classification visuelle assistée par modèles de vision. |
-| **PhotoPrism DB** | `3306` | **Base de données MariaDB** : Stockage des tables d'indexation, coordonnées GPS et métadonnées de la galerie PhotoPrism. |
+| **Immich** | `2283` | **Gestionnaire de photothèque unifié & sauvegarde mobile** : Synchronisation automatique smartphone, reconnaissance faciale, recherche vectorielle IA (CLIP) et déduplication native. |
+| **Immich DB & ML** | `5432 / 3003` | **PostgreSQL (VectorChord) & Machine Learning** : Stockage des vecteurs d'embeddings IA, coordonnées GPS et métadonnées EXIF de la galerie Immich. |
 | **Vaultwarden** | `80` | **Serveur de coffre-fort de mots de passe** : Implémentation compatible avec les clients Bitwarden, chiffrée de bout en bout et protégée par 2FA. |
 
 ---
@@ -216,7 +218,7 @@ Toutes les configurations `docker-compose.yml` ont été assainies (secrets et d
 | **esphome** | [`stacks/esphome/`](stacks/esphome/docker-compose.yml) | `esphome` | 🔒 **Local / VPN** |
 | **nextcloud** | [`stacks/nextcloud/`](stacks/nextcloud/docker-compose.yml) | `nextcloud`, `mariadb` | 🌐 **Public (HTTPS + 2FA)** |
 | **collabora** | [`stacks/collabora/`](stacks/collabora/docker-compose.yml) | `collabora` | 🌐 **Public (HTTPS)** |
-| **photoprism** | [`stacks/photoprism/`](stacks/photoprism/docker-compose.yml) | `photoprism`, `photoprism-db` | 🌐 **Public (HTTPS)** |
+| **immich** | [`stacks/immich/`](stacks/immich/docker-compose.yml) | `immich_server`, `immich_machine_learning`, `immich_postgres`, `immich_redis` | 🌐 **Public (HTTPS)** |
 | **vaultwarden** | [`stacks/vaultwarden/`](stacks/vaultwarden/docker-compose.yml) | `vaultwarden` | 🌐 **Public (HTTPS + 2FA)** |
 | **nginx-proxy-manager** | [`stacks/nginx-proxy-manager/`](stacks/nginx-proxy-manager/docker-compose.yml) | `proxy` | 🌐 **Ports 80/443 Publics** *(Admin 81 en Local)* |
 | **docker-socket-proxy** | [`stacks/docker-socket-proxy/`](stacks/docker-socket-proxy/docker-compose.yml) | `docker-proxy` | 🔒 **Local interne** |

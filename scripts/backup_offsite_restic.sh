@@ -2,7 +2,7 @@
 # ==============================================================================
 # 🔐 Sauvegarde Distante Chiffrée (Zero-Knowledge) vers o2switch via SFTP & Restic
 # Conçu pour :
-#   - Exporter à chaud les bases de données (MariaDB, PhotoPrism, Vaultwarden)
+#   - Exporter à chaud les bases de données (MariaDB Nextcloud, PostgreSQL Immich, Vaultwarden)
 #   - Chiffrer de bout en bout en AES-256 / ChaCha20 avant transmission
 #   - Synchroniser en incrémental dédupliqué via SFTP vers o2switch
 #   - Purger les snapshots selon la politique de rétention
@@ -87,10 +87,10 @@ if docker ps --format '{{.Names}}' | grep -q "^mariadb$"; then
     docker exec mariadb mariadb-dump -u root --all-databases > "$TMP_DUMP_DIR/nextcloud_databases.sql" 2>/dev/null || true
 fi
 
-# B. PhotoPrism (MariaDB)
-if docker ps --format '{{.Names}}' | grep -q "^photoprism-db$"; then
-    echo "    -> Export SQL PhotoPrism MariaDB..."
-    docker exec photoprism-db mariadb-dump -u root --all-databases > "$TMP_DUMP_DIR/photoprism_databases.sql" 2>/dev/null || true
+# B. Immich (PostgreSQL)
+if docker ps --format '{{.Names}}' | grep -q "^immich_postgres$"; then
+    echo "    -> Export SQL Immich PostgreSQL..."
+    docker exec immich_postgres pg_dumpall --clean --if-exists --username=postgres > "$TMP_DUMP_DIR/immich_databases.sql" 2>/dev/null || true
 fi
 
 # C. Coffre-fort Vaultwarden (SQLite)

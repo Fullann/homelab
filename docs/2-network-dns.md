@@ -161,7 +161,7 @@ Ces services sont conçus dès l'origine pour une utilisation en mobilité et di
 | **Jellyseerr** | `demandes.mondomaine.com` | Portail de requêtes moderne conçu pour être partagé avec vos amis/famille sans leur donner accès au serveur. | Authentification via comptes Jellyfin, limiter les quotas de requêtes. |
 | **Nextcloud** | `cloud.mondomaine.com` | Synchronisation automatique des photos du téléphone, accès aux fichiers, contacts et agenda partout. | **Double authentification (2FA) obligatoire**, brute-force protection active. |
 | **Collabora Online** | `office.mondomaine.com` | Nécessaire pour que Nextcloud puisse afficher et éditer des documents Office en direct. | Restreint au domaine Nextcloud via la variable `domain` dans le compose. |
-| **PhotoPrism** | `photos.mondomaine.com` | Consultation de votre photothèque personnelle en déplacement. | Mot de passe administrateur fort, limiter les partages publics. |
+| **Immich** | `photos.mondomaine.com` | Sauvegarde mobile automatique et consultation de votre photothèque unifiée en déplacement. | Mot de passe administrateur fort, limiter les partages publics. |
 | **Vaultwarden** | `passwords.mondomaine.com` | Synchronisation de votre coffre-fort de mots de passe sur vos mobiles/navigateurs. | **HTTPS obligatoire**, `- SIGNUPS_ALLOWED=false` pour bloquer les inscriptions, **2FA obligatoire**. |
 
 ---
@@ -191,7 +191,7 @@ Ces conteneurs ne doivent **JAMAIS avoir de nom de domaine public** ni de port r
 | **FlareSolverr** | Proxy interne sans aucune authentification. S'il était exposé, n'importe qui pourrait l'utiliser comme proxy ouvert. |
 | **AdGuard Home (Web & DNS)** | Si vous exposez le port DNS 53 sur Internet, votre serveur devient un **Open DNS Resolver**, immédiatement exploité par des hackers pour lancer des attaques DDoS massives par amplification. |
 | **Docker Socket Proxy** | API système Docker brute sans mot de passe. Réservée exclusivement aux conteneurs internes. |
-| **MariaDB (Nextcloud & PhotoPrism)** | Bases de données relationnelles. Aucune raison d'avoir une ouverture extérieure. |
+| **Bases de données (MariaDB Nextcloud & PostgreSQL Immich)** | Bases de données relationnelles. Aucune raison d'avoir une ouverture extérieure. |
 | **Mosquitto (MQTT)** | Ne doit écouter que sur le réseau local LAN pour vos capteurs ESP32. |
 | **ESPHome** | Outil de flashage et programmation de microcontrôleurs. |
 | **Wyoming (Piper/Whisper/WakeWord)** | Moteurs d'IA vocale internes sans interface utilisateur, dédiés à Home Assistant. |

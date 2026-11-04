@@ -11,7 +11,7 @@ Homepage regroupe l'accès à l'ensemble de votre infrastructure selon une logiq
 | Zone d'accès | Domaine / URL | Exemples de services | Règle d'exposition |
 | :--- | :--- | :--- | :--- |
 | **Zone Privée Locale** | `http://<service>.local` | Radarr, Sonarr, Transmission, Prowlarr, OMV, Portainer, Netdata | Accessible uniquement depuis le LAN ou à distance via **Tailscale**. Aucune exposition sur Internet. |
-| **Zone Publique Sécurisée** | `https://<service>.domaine.com` | Nextcloud, PhotoPrism, Vaultwarden, Authelia | Accessible sur Internet via Nginx Proxy Manager avec certificat SSL et 2FA. |
+| **Zone Publique Sécurisée** | `https://<service>.domaine.com` | Nextcloud, Immich, Vaultwarden, Authelia | Accessible sur Internet via Nginx Proxy Manager avec certificat SSL et 2FA. |
 
 ---
 
