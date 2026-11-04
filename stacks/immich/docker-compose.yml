@@ -6,6 +6,9 @@ services:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     ports:
       - "127.0.0.1:2283:2283"
+    devices:
+      # Accélération matérielle iGPU Intel QuickSync pour le transcodage vidéo
+      - /dev/dri:/dev/dri
     volumes:
       - ${UPLOAD_LOCATION:-/srv/storage/immich/library}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
@@ -21,7 +24,12 @@ services:
 
   immich-machine-learning:
     container_name: immich_machine_learning
-    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    # Version OpenVINO pour accélérer la reconnaissance faciale et la recherche IA sur l'iGPU Intel
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}-openvino
+    device_cgroup_rules:
+      - 'c 189:* rmw'
+    devices:
+      - /dev/dri:/dev/dri
     volumes:
       - model-cache:/cache
     env_file:
@@ -50,6 +58,9 @@ services:
     volumes:
       - ${DB_DATA_LOCATION:-/srv/storage/immich/postgres}:/var/lib/postgresql/data
     restart: unless-stopped
+    labels:
+      # Protection contre les mises à jour majeures automatiques de base de données par Watchtower
+      - "com.centurylinklabs.watchtower.enable=false"
     networks:
       - default
 

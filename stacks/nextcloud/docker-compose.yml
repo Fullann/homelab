@@ -16,10 +16,19 @@ services:
       - ${STORAGE_DATA_PATH:-/srv/nextcloud/data}:/data
     depends_on:
       - "mariadb"
+      - "redis"
     restart: unless-stopped
     labels:
       # Empêche Watchtower de mettre à jour Nextcloud à l'aveugle sans migration manuelle
       - "com.centurylinklabs.watchtower.enable=false"
+
+  redis:
+    image: docker.io/valkey/valkey:8-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    command: valkey-server --save 60 1 --loglevel warning
+    volumes:
+      - nextcloud_redis:/data
 
   mariadb:
     image: linuxserver/mariadb
@@ -43,6 +52,7 @@ services:
 volumes:
   nextcloud_config:
   mariadb_config:
+  nextcloud_redis:
 
 networks:
   default:

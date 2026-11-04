@@ -15,6 +15,8 @@ services:
       - WATCHTOWER_REVIVE_STOPPED=false
       # Redémarrage progressif pour éviter l'indisponibilité simultanée
       - WATCHTOWER_ROLLING_RESTART=true
+      # Notifications push via le conteneur ntfy local après chaque cycle de mise à jour
+      - WATCHTOWER_NOTIFICATION_URL=${WATCHTOWER_NOTIFICATION_URL:-ntfy://ntfy:80/homelab-backups?scheme=http}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 

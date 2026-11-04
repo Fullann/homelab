@@ -9,8 +9,8 @@ services:
       - TZ=Europe/Zurich
     volumes:
       - jellfin_config:/config
-      # Dossier temporaire dédié pour éviter de saturer /config
-      - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/transcode:/transcode
+      # Transcodage en RAM (/dev/shm) pour éviter de solliciter le RAID 5 mécanique et le SSD
+      - /dev/shm:/transcode
       - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/MUSIC:/data/music
       - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/FILM:/data/movies
       - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media/SERIE:/data/series
