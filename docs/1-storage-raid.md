@@ -86,4 +86,27 @@ sudo chmod -R 775 /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/med
 
 ---
 
+## 5. Extinction propre & Protection contre les coupures au redémarrage
+
+Sur les configurations où les disques durs sont alimentés via un rail auxiliaire (par exemple le port PCIe 12V d'une carte mère ITX DC-IN), le signal de réinitialisation matériel lors d'un `reboot` peut couper le 12V avant que Linux n'ait fini de démonter le RAID 5. Si de nombreux conteneurs Docker écrivent simultanément sur le RAID, la partition `ext4` risque d'être coupée à chaud, déclenchant une longue vérification `fsck` au démarrage suivant.
+
+Pour garantir que Docker est arrêté et que le cache disque est intégralement vidé en mémoire avant le démontage du volume RAID 5, une directive systemd dédiée est configurée sur le serveur :
+
+```ini
+# /etc/systemd/system/docker.service.d/wait-raid-mount.conf
+[Unit]
+RequiresMountsFor=/srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45
+After=local-fs.target
+
+[Service]
+ExecStopPost=/bin/sync
+```
+
+Cette configuration garantit :
+1. L'arrêt ordonné et complet de tous les conteneurs Docker avant toute tentative de démontage du RAID 5.
+2. L'exécution de `sync` pour vider tous les tampons d'écriture de la RAM vers les disques physiques.
+3. Le démontage propre et le marquage `clean` de la partition `ext4` de 12 To, éliminant les vérifications d'intégrité intempestives au démarrage.
+
+---
+
 [← Retour au README principal](../README.md)

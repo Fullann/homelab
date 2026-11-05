@@ -4,7 +4,11 @@ services:
   sonarr:
     image: linuxserver/sonarr
     container_name: sonarr
-    restart: always
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Europe/Zurich
+    restart: unless-stopped
     volumes:
       - sonarr_config:/config
       - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
@@ -12,7 +16,11 @@ services:
   radarr:
     image: linuxserver/radarr
     container_name: radarr
-    restart: always
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Europe/Zurich
+    restart: unless-stopped
     volumes:
       - radarr_config:/config
       - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
@@ -20,7 +28,11 @@ services:
   lidarr:
     image: linuxserver/lidarr
     container_name: lidarr
-    restart: always
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Europe/Zurich
+    restart: unless-stopped
     volumes:
       - lidarr_config:/config
       - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
@@ -30,8 +42,8 @@ services:
     container_name: readarr
     environment:
       - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
+      - PGID=100
+      - TZ=Europe/Zurich
     volumes:
       - readarr_config:/config
       - /srv/dev-disk-by-uuid-eaad3822-db12-4b70-9e31-59bc10826a45/media:/data
